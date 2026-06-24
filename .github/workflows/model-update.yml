@@ -1,0 +1,47 @@
+name: Check Model Updates
+
+on:
+  schedule:
+    - cron: '0 3 * * MON'  # Weekly Monday 3 AM
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-updates:
+    name: Check Ollama Model Updates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check for model updates
+        id: check
+        run: |
+          # Get current model from docker-compose.yml
+          CURRENT=$(grep -A1 "ollama pull" scripts/pull-models.sh | grep "qwen2.5-coder:7b" | head -1 | sed 's/.*:7b-//' | sed 's/".*//')
+          echo "Current quantization: $CURRENT"
+
+          # Check Ollama library for latest tags
+          LATEST_TAGS=$(curl -s https://ollama.com/library/qwen2.5-coder/tags | jq -r '.[] | select(.name | contains("7b")) | .name' | head -5)
+          echo "Available tags:"
+          echo "$LATEST_TAGS"
+
+          # For now, just report - PR creation would need more logic
+          echo "models_checked=true" >> $GITHUB_OUTPUT
+
+      - name: Create update PR
+        if: steps.check.outputs.models_checked == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update model versions"
+          title: "chore: update Ollama model versions"
+          body: |
+            Weekly model version check.
+            Current models in `scripts/pull-models.sh` may have updates available.
+          branch: model-updates
+          delete-branch: true

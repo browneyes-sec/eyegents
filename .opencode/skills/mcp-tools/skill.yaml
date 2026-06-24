@@ -1,0 +1,17 @@
+name: mcp-tools
+version: 1.0.0
+description: MCP client wrappers for tool execution
+tools: [vector_search, vector_upsert, github-api, filesystem, shell, skill_execute]
+patterns:
+  - name: search_code
+    description: Natural language code search
+    example: |
+      // mcp:eyegents:code_search query="password hashing bcrypt" languages=["typescript"]
+  - name: get_decision
+    description: Retrieve architectural decision
+    example: |
+      // mcp:eyegents:decision_search query="database migration strategy" limit=3
+  - name: propose_decision
+    description: Create new ADR
+    example: |
+      // mcp:eyegents:vector_upsert type=decision context="Choosing ORM" rationale="Type-safe, migration support" outcome="Prisma selected" tags=["architecture", "database"]

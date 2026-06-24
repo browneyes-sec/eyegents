@@ -1,0 +1,22 @@
+name: security-audit
+version: 1.0.0
+description: Security scanning and audit patterns
+tools: [shell, vector_search, github_post_review]
+patterns:
+  - name: secret_scan
+    description: Detect hardcoded secrets
+    example: |
+      // shell_exec command="gitleaks" args=["detect", "--source", ".", "--verbose"]
+  - name: dependency_scan
+    description: Scan for vulnerable dependencies
+    example: |
+      // shell_exec command="npm" args=["audit", "--audit-level=high"]
+      // shell_exec command="osv-scanner" args=["--lockfile=package-lock.json"]
+  - name: static_analysis
+    description: Semgrep security rules
+    example: |
+      // shell_exec command="semgrep" args=["--config=auto", "--error", "."]
+  - name: license_check
+    description: Verify license compliance
+    example: |
+      // shell_exec command="license-checker" args=["--onlyAllow", "MIT,Apache-2.0,BSD-3-Clause", "--production"]

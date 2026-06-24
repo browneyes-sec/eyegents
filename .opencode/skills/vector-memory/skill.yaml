@@ -1,0 +1,17 @@
+name: vector-memory
+version: 1.0.0
+description: Persistent memory operations for agents
+tools: [vector_upsert, vector_search, conversation_memory]
+patterns:
+  - name: remember
+    description: Store key-value with semantic search
+    example: |
+      // vector_upsert type=code_chunk filePath=src/auth.ts content="JWT secret rotation every 24h" tags=["security", "auth"]
+  - name: recall
+    description: Semantic recall of stored memories
+    example: |
+      // vector_search query="JWT secret rotation" collection=code_chunks limit=3
+  - name: forget
+    description: Remove memories by pattern
+    example: |
+      // vector_delete collection=conversations filter={sessionId: "old-session"}

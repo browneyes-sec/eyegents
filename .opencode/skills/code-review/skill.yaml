@@ -1,0 +1,17 @@
+name: code-review
+version: 1.0.0
+description: Code review patterns and checklists
+tools: [vector_search, github_post_review, github_get_pr]
+patterns:
+  - name: security_review
+    description: Security-focused review checklist
+    example: |
+      // Check: AuthZ on all endpoints, input validation, no secrets, parameterized queries, CSP headers
+  - name: performance_review
+    description: Performance review checklist
+    example: |
+      // Check: N+1 queries, missing indexes, excessive allocations, bundle size, lazy loading
+  - name: maintainability_review
+    description: Maintainability review checklist
+    example: |
+      // Check: Cyclomatic complexity, duplication, naming, documentation, test coverage

@@ -1,0 +1,17 @@
+name: github-operations
+version: 1.0.0
+description: GitHub API operations for PRs, issues, reviews
+tools: [github_create_pr, github_get_pr, github_post_review, github_search_code, github_get_issues, github_create_issue]
+patterns:
+  - name: create_pr
+    description: Create PR with proper description
+    example: |
+      // github_create_pr title="feat: add user registration" body="## Changes\n- Added POST /auth/register\n- Added validation\n- Added tests\n\n## Testing\n- Unit: 95% coverage\n- Integration: PASS" head="feature/user-registration"
+  - name: review_code
+    description: Post structured code review
+    example: |
+      // github_post_review prNumber=42 body="## Review\n### Security\n- No secrets found\n- Input validation present\n### Performance\n- Query optimized\n### Suggestions\n- Add rate limiting" event="APPROVE"
+  - name: link_issue
+    description: Link PR to issue
+    example: |
+      // github_update_pr prNumber=42 body="Closes #123"

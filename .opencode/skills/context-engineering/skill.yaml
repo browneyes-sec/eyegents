@@ -1,0 +1,27 @@
+name: context-engineering
+version: 1.0.0
+description: Vector retrieval, context assembly, and indexing for agent context
+tools: [vector_search, vector_upsert, code_search, decision_search]
+patterns:
+  - name: retrieve_context
+    description: Semantic + keyword search for relevant code
+    example: |
+      // Task: "Add authentication to API"
+      // Search: "authentication middleware jwt token validation"
+      // Results: existing auth patterns, middleware, token handling
+  - name: assemble_context
+    description: Build optimal context packet within token budget
+    example: |
+      // Query: "Implement user registration"
+      // Budget: 24000 tokens
+      // 1. Code chunks (8): user model, validation, password hashing
+      // 2. Decisions (3): auth strategy, password policy
+      // 3. Skill patterns (2): validation, error handling
+      // 4. Git history (5): recent auth changes
+      // 5. Memory (4): previous conversation
+  - name: index_session
+    description: Store conversation + decisions for future retrieval
+    example: |
+      // After completing task
+      // vector_upsert type=conversation sessionId=abc123 messages=[...]
+      // vector_upsert type=decision context="Chose JWT over sessions" rationale="Stateless, scalable" outcome="JWT implemented"

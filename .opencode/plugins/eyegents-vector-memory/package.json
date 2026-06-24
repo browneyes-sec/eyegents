@@ -1,0 +1,10 @@
+{
+  "name": "@eyegents/vector-memory-plugin",
+  "version": "0.1.0",
+  "main": "./index.ts",
+  "type": "module",
+  "dependencies": {
+    "@eyegents/mcp-client": "*",
+    "@eyegents/ollama-client": "*"
+  }
+}
