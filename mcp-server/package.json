@@ -15,6 +15,7 @@
     "@eyegents/shared-types": "*",
     "@eyegents/qdrant-client": "*",
     "@eyegents/ollama-client": "*",
+    "@eyegents/openrouter-client": "*",
     "@eyegents/github-client": "*",
     "@eyegents/context-engine": "*",
     "@eyegents/agent-runtime": "*",

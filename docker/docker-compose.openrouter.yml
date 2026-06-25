@@ -1,0 +1,15 @@
+# OpenRouter Service Overlay
+# Usage: docker compose -f docker-compose.yml -f docker-compose.openrouter.yml up
+#
+# This overlay adds OpenRouter-specific configuration to the base stack.
+# It does NOT replace the base configuration — it merges with it.
+
+services:
+  mcp-server:
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - NEMOTRON_MODEL=${NEMOTRON_MODEL:-nvidia/nemotron-3-super-120b-a12b:free}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek/deepseek-v4-flash}
+      - GH_PAT=${GH_PAT}
+      - OPENROUTER_SITE_URL=https://github.com/browneyes-sec/eyegents
+      - OPENROUTER_SITE_TITLE=eyegents
