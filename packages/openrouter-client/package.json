@@ -1,0 +1,31 @@
+{
+  "name": "@eyegents/openrouter-client",
+  "version": "0.1.0",
+  "description": "Isolated OpenRouter client for remote LLM routing (Nemotron, DeepSeek)",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "biome check .",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@eyegents/shared-types": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "peerDependencies": {},
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

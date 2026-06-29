@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Agent-to-model routing rules for OpenRouter integration",
+  "version": "0.1.0",
+  "models": {
+    "nemotron-super": {
+      "openrouterId": "nvidia/nemotron-3-super-120b-a12b:free",
+      "contextWindow": 1048576,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0,
+      "costPerMillionOutput": 0,
+      "strengths": ["agent orchestration", "multi-step planning", "long context"],
+      "tier": "free"
+    },
+    "nemotron-ultra": {
+      "openrouterId": "nvidia/nemotron-3-ultra-550b-a55b",
+      "contextWindow": 1048576,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0.001,
+      "costPerMillionOutput": 0.003,
+      "strengths": ["complex reasoning", "security audits", "architecture review"],
+      "tier": "paid"
+    },
+    "nemotron-nano": {
+      "openrouterId": "nvidia/nemotron-3-nano-30b-a3b:free",
+      "contextWindow": 262144,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0,
+      "costPerMillionOutput": 0,
+      "strengths": ["lightweight tasks", "fast inference", "sub-agent work"],
+      "tier": "free"
+    },
+    "deepseek-flash": {
+      "openrouterId": "deepseek/deepseek-v4-flash",
+      "contextWindow": 1048576,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0.112,
+      "costPerMillionOutput": 0.224,
+      "strengths": ["fast coding", "code generation", "test writing"],
+      "tier": "paid"
+    },
+    "deepseek-pro": {
+      "openrouterId": "deepseek/deepseek-v4-pro",
+      "contextWindow": 1048576,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0.435,
+      "costPerMillionOutput": 0.87,
+      "strengths": ["complex reasoning", "architecture", "deep analysis"],
+      "tier": "paid"
+    }
+  },
+  "agentRoutes": {
+    "orchestrator": {
+      "simple": {
+        "model": "local",
+        "description": "Use local qwen2.5-coder:7b for simple orchestration tasks"
+      },
+      "complex": {
+        "model": "nemotron-super",
+        "description": "Escalate to Nemotron 3 Super for complex multi-step planning"
+      },
+      "complexityThreshold": 2048,
+      "complexKeywords": ["decompose", "plan", "architecture", "refactor", "multi-step", "break down", "coordinate"]
+    },
+    "backend": {
+      "primary": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash for backend coding tasks"
+      },
+      "fallback": {
+        "model": "local",
+        "description": "Fall back to local qwen2.5-coder:7b"
+      }
+    },
+    "frontend": {
+      "primary": {
+        "model": "local",
+        "description": "Local qwen2.5-coder:7b for frontend tasks"
+      },
+      "fallback": {
+        "model": "nemotron-super",
+        "description": "Escalate to Nemotron 3 Super if needed"
+      }
+    },
+    "qa": {
+      "primary": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash for test generation"
+      },
+      "fallback": {
+        "model": "local",
+        "description": "Fall back to local qwen2.5-coder:7b"
+      }
+    },
+    "ops": {
+      "primary": {
+        "model": "local",
+        "description": "Local qwen2.5-coder:7b for ops tasks"
+      },
+      "fallback": {
+        "model": "nemotron-super",
+        "description": "Escalate to Nemotron 3 Super if needed"
+      }
+    },
+    "fullstack": {
+      "primary": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash for full-stack features"
+      },
+      "fallback": {
+        "model": "local",
+        "description": "Fall back to local qwen2.5-coder:7b"
+      }
+    },
+    "certifier": {
+      "primary": {
+        "model": "nemotron-ultra",
+        "description": "Nemotron 3 Ultra for security audits and compliance"
+      },
+      "fallback": {
+        "model": "deepseek-pro",
+        "description": "DeepSeek V4 Pro as secondary option"
+      }
+    }
+  },
+  "localModels": {
+    "primary": "qwen2.5-coder:7b",
+    "small": "qwen2.5:0.5b",
+    "embedding": "bge-m3:latest"
+  }
+}
