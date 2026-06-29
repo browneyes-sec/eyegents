@@ -1,0 +1,33 @@
+services:
+  ollama:
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: "1.5G"
+        reservations:
+          cpus: "1.0"
+          memory: "768M"
+    environment:
+      - OLLAMA_NUM_PARALLEL=1
+      - OLLAMA_MAX_LOADED_MODELS=1
+
+  qdrant:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "512M"
+        reservations:
+          cpus: "0.25"
+          memory: "256M"
+
+  mcp-server:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: "256M"
+        reservations:
+          cpus: "0.1"
+          memory: "128M"

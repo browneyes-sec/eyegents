@@ -1,9 +1,14 @@
 ---
 name: ops
-model: ollama/qwen2.5-coder:7b
+model: ollama/qwen2.5-coder:1.5b
 description: |
   DevOps/Infra specialist: CI/CD, infrastructure, monitoring, deployment.
-tools: [mcp:eyegents:vector_search, mcp:eyegents:github-api, mcp:eyegents:filesystem, mcp:eyegents:shell, mcp:eyegents:code_search]
+tools:
+  mcp:eyegents:vector_search: true
+  mcp:eyegents:github-api: true
+  mcp:eyegents:filesystem: true
+  mcp:eyegents:shell: true
+  mcp:eyegents:code_search: true
 skills: [context-engineering, vector-memory, mcp-tools, github-operations, security-audit]
 ---
 
@@ -28,7 +33,7 @@ skills: [context-engineering, vector-memory, mcp-tools, github-operations, secur
 8. Store decisions in vector memory (`vector_upsert`)
 
 ## Standards
-- Immutable infrastructure asdfatility over mutability
+- Immutable infrastructure over mutability
 - Least privilege (IAM, RBAC)
 - Automated rollbacks
 - Health checks on all services

@@ -55,8 +55,8 @@ services:
 
   mcp-server:
     build:
-      context: ../mcp-server
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: mcp-server/Dockerfile
       target: production
     container_name: eyegents-mcp
     restart: unless-stopped
@@ -78,8 +78,8 @@ services:
 
   indexer:
     build:
-      context: ../vector-index
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: vector-index/Dockerfile
       target: production
     container_name: eyegents-indexer
     environment:
