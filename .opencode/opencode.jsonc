@@ -10,17 +10,29 @@
         "baseURL": "http://localhost:11434/v1"
       },
       "models": {
-        "qwen2.5-coder:1.5b": {
-          "name": "Qwen2.5-Coder 1.5B",
-          "limit": { "context": 32768, "output": 4096 }
-        },
         "qwen2.5-coder:7b": {
           "name": "Qwen2.5-Coder 7B",
           "limit": { "context": 32768, "output": 8192 }
         },
+        "qwen2.5-coder:1.5b": {
+          "name": "Qwen2.5-Coder 1.5B",
+          "limit": { "context": 32768, "output": 4096 }
+        },
+        "qwen2.5:1.5b": {
+          "name": "Qwen2.5 1.5B",
+          "limit": { "context": 32768, "output": 4096 }
+        },
+        "qwen2.5:0.5b": {
+          "name": "Qwen2.5 0.5B",
+          "limit": { "context": 32768, "output": 2048 }
+        },
         "bge-m3:latest": {
           "name": "BGE-M3 Embedding",
-          "limit": { "context": 8192, "output": 0 }
+          "limit": { "context": 8192, "output": 1024 }
+        },
+        "nomic-embed-text:latest": {
+          "name": "Nomic Embed Text",
+          "limit": { "context": 2048, "output": 1024 }
         }
       }
     },
@@ -31,12 +43,30 @@
       "options": { "baseURL": "https://openrouter.ai/api/v1" }
     }
   },
+  "plugin": ["./plugins/eyegents-vector-memory"],
+  "instructions": ["CLAUDE.md"],
+
+  "permission": {
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "edit": "allow",
+    "bash": "allow",
+    "external_directory": "allow",
+    "webfetch": "allow",
+    "websearch": "allow",
+    "todowrite": "allow",
+    "question": "allow",
+    "skill": "allow"
+  },
+
   "mcp": {
     "eyegents": {
       "type": "local",
       "command": ["docker", "exec", "-i", "eyegents-mcp", "node", "dist/index.js"],
       "enabled": true,
-      "env": {
+      "environment": {
         "QDRANT_URL": "http://localhost:6333",
         "OLLAMA_URL": "http://localhost:11434",
         "GITHUB_TOKEN": "{env:GITHUB_TOKEN}"
