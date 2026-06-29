@@ -51,7 +51,12 @@ services:
         reservations:
           cpus: "0.5"
           memory: "512M"
-
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:6333/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   mcp-server:
     build:
@@ -65,16 +70,30 @@ services:
       - QDRANT_URL=http://qdrant:6333
       - OLLAMA_URL=http://ollama:11434
       - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - NEMOTRON_MODEL=${NEMOTRON_MODEL:-nvidia/nemotron-3-super-120b-a12b:free}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek/deepseek-v4-flash}
+      - GH_PAT=${GH_PAT}
+      - OPENROUTER_SITE_URL=https://github.com/browneyes-sec/eyegents
+      - OPENROUTER_SITE_TITLE=eyegents
       - NODE_ENV=production
       - LOG_LEVEL=warn
     depends_on:
-      - qdrant
-      - ollama
+      qdrant:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
     deploy:
       resources:
         limits:
           cpus: "0.5"
           memory: "512M"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   indexer:
     build:
@@ -93,8 +112,10 @@ services:
       - ..:/workspace:ro
       - indexer-cache:/cache
     depends_on:
-      - qdrant
-      - ollama
+      qdrant:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
     profiles: ["indexing"]
 
 volumes:

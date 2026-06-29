@@ -3,10 +3,13 @@
 ## Project Overview
 **eyegents** — Local-first AI coding platform with vectorized memory, multi-agent collaboration, and MCP tool integration.
 
+**Documentation**: See [`docs/`](docs/) for full architecture, operations, and API reference.
+
 ## Architecture
 - **Orchestrator** → Routes to: backend, frontend, qa, ops, fullstack, certifier
 - **Vector DB**: Qdrant (code, conversations, decisions, patterns)
-- **LLM**: Ollama (qwen2.5-coder:7b primary, qwen2.5:0.5b small)
+- **LLM (Local)**: Ollama (qwen2.5-coder:7b primary, qwen2.5:0.5b small)
+- **LLM (Remote)**: OpenRouter (Nemotron 3 Super/Ultra, DeepSeek V4 Flash/Pro)
 - **MCP**: Custom server with GitHub, FS, Shell, Vector tools
 - **Skills**: Domain-specific patterns loaded as few-shot
 
@@ -58,6 +61,25 @@
 - Alt embedding: `nomic-embed-text:latest` (768-dim, fast)
 - **Auto-upgrade**: Weekly GitHub Action checks Ollama library
 
+## OpenRouter Agent Routing (Isolated Package)
+| Agent | Primary | Fallback | Notes |
+|-------|---------|----------|-------|
+| orchestrator | local qwen2.5-coder:7b | Nemotron 3 Super (free) | Hybrid: local for simple, remote for complex |
+| backend | DeepSeek V4 Flash | local qwen2.5-coder:7b | Fast coding tasks |
+| frontend | local qwen2.5-coder:7b | Nemotron 3 Super (free) | UI tasks stay local |
+| qa | DeepSeek V4 Flash | local qwen2.5-coder:7b | Fast test generation |
+| ops | local qwen2.5-coder:7b | Nemotron 3 Super (free) | Infra tasks stay local |
+| fullstack | DeepSeek V4 Flash | local qwen2.5-coder:7b | E2E features |
+| certifier | Nemotron 3 Ultra | DeepSeek V4 Pro | Deep reasoning for security |
+
+## OpenRouter Models
+| Model | ID | Context | Cost | Use Case |
+|-------|----|---------|------|----------|
+| Nemotron 3 Super (free) | `nvidia/nemotron-3-super:free` | 1M | $0 | Agent orchestration |
+| Nemotron 3 Ultra | `nvidia/nemotron-3-ultra-550b-a55b` | 1M | $0.001/$0.003 | Security audits |
+| DeepSeek V4 Flash | `deepseek/deepseek-v4-flash` | 1M | $0.112/$0.224 | Fast coding |
+| DeepSeek V4 Pro | `deepseek/deepseek-v4-pro` | 1M | $0.435/$0.87 | Complex reasoning |
+
 ## External Fallback Strategy
 | Scenario | Fallback |
 |----------|----------|
@@ -88,6 +110,10 @@ npm run test
 
 # Typecheck all packages
 npm run typecheck
+
+# Test OpenRouter connectivity
+source .venvs/openrouter/bin/activate
+python scripts/openrouter-test.py
 ```
 
 ## Agent Routing Keywords

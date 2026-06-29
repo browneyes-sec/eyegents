@@ -3,7 +3,9 @@ dist/
 build/
 .turbo/
 .env
+.secrets
 *.log
 .DS_Store
 coverage/
 *.tsbuildinfo
+.venvs/
