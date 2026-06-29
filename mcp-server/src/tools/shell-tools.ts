@@ -29,16 +29,14 @@ export const shellTools = [
       env: z.record(z.string()).optional()
     }),
     handler: async (args: { command: string; args: string[]; cwd?: string; timeout?: number; env?: Record<string, string> }) => {
-      const fullCommand = [args.command, ...args.args].join(" ");
-      if (!isAllowed(fullCommand)) {
-        throw new Error(`Command not allowed: ${fullCommand}. Allowed: ${ALLOWED_COMMANDS.join(", ")}`);
+      if (!isAllowed(args.command)) {
+        throw new Error(`Command not allowed: ${args.command}. Allowed: ${ALLOWED_COMMANDS.join(", ")}`);
       }
 
       return new Promise((resolve, reject) => {
         const child = spawn(args.command, args.args, {
           cwd: args.cwd || process.cwd(),
           env: { ...process.env, ...args.env },
-          shell: true
         });
 
         let stdout = "";
