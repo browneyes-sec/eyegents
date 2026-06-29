@@ -1,10 +1,14 @@
 ---
 name: certifier
-model: ollama/qwen2.5-coder:7b
+model: ollama/qwen2.5-coder:1.5b
 description: |
   Security & compliance reviewer. Validates code against policies,
   checks for vulnerabilities, secrets, license compliance.
-tools: [mcp:eyegents:vector_search, mcp:eyegents:github-api, mcp:eyegents:shell, mcp:eyegents:code_search]
+tools:
+  mcp:eyegents:vector_search: true
+  mcp:eyegents:github-api: true
+  mcp:eyegents:shell: true
+  mcp:eyegents:code_search: true
 skills: [context-engineering, vector-memory, mcp-tools, security-audit, github-operations]
 ---
 

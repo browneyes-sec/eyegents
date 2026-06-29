@@ -1,11 +1,14 @@
 ---
 name: orchestrator
-model: ollama/qwen2.5-coder:7b
+model: ollama/qwen2.5-coder:1.5b
 description: |
   Task decomposition, agent routing, context aggregation.
   Breaks complex requests into subtasks, assigns to specialists,
   synthesizes results.
-tools: [mcp:eyegents:vector_search, mcp:eyegents:skill_execute, mcp:eyegents:decision_search]
+tools:
+  mcp:eyegents:vector_search: true
+  mcp:eyegents:skill_execute: true
+  mcp:eyegents:decision_search: true
 skills: [context-engineering, vector-memory, mcp-tools]
 ---
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "ollama/qwen2.5-coder:7b",
-  "small_model": "ollama/qwen2.5:0.5b",
+  "model": "ollama/qwen2.5-coder:1.5b",
+  "small_model": "ollama/qwen2.5-coder:1.5b",
   "provider": {
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
@@ -10,25 +10,17 @@
         "baseURL": "http://localhost:11434/v1"
       },
       "models": {
+        "qwen2.5-coder:1.5b": {
+          "name": "Qwen2.5-Coder 1.5B",
+          "limit": { "context": 32768, "output": 4096 }
+        },
         "qwen2.5-coder:7b": {
           "name": "Qwen2.5-Coder 7B",
           "limit": { "context": 32768, "output": 8192 }
         },
-        "qwen2.5:1.5b": {
-          "name": "Qwen2.5 1.5B",
-          "limit": { "context": 32768, "output": 4096 }
-        },
-        "qwen2.5:0.5b": {
-          "name": "Qwen2.5 0.5B",
-          "limit": { "context": 32768, "output": 2048 }
-        },
         "bge-m3:latest": {
           "name": "BGE-M3 Embedding",
-          "limit": { "context": 8192 }
-        },
-        "nomic-embed-text:latest": {
-          "name": "Nomic Embed Text",
-          "limit": { "context": 2048 }
+          "limit": { "context": 8192, "output": 0 }
         }
       }
     },
@@ -39,24 +31,17 @@
       "options": { "baseURL": "https://openrouter.ai/api/v1" }
     }
   },
-  "plugin": ["./plugins/eyegents-vector-memory"],
   "mcp": {
-    "servers": {
-      "eyegents": {
-        "command": "docker",
-        "args": ["exec", "-i", "eyegents-mcp", "node", "dist/index.js"],
-        "env": {
-          "QDRANT_URL": "http://localhost:6333",
-          "OLLAMA_URL": "http://localhost:11434",
-          "GITHUB_TOKEN": "${GITHUB_TOKEN}"
-        }
+    "eyegents": {
+      "type": "local",
+      "command": ["docker", "exec", "-i", "eyegents-mcp", "node", "dist/index.js"],
+      "enabled": true,
+      "env": {
+        "QDRANT_URL": "http://localhost:6333",
+        "OLLAMA_URL": "http://localhost:11434",
+        "GITHUB_TOKEN": "{env:GITHUB_TOKEN}"
       }
     }
   },
-  "share": "disabled",
-  "fallbackModels": [
-    "opencode-zen/qwen-3-coder-480b",
-    "openrouter/qwen/qwen-2.5-coder-32b-instruct",
-    "openai/gpt-4o-mini"
-  ]
+  "share": "disabled"
 }

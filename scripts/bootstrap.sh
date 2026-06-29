@@ -31,6 +31,9 @@ npm ci
 echo "🔨 Building all packages..."
 npm run build
 
+echo "📚 Pruning monorepo for Docker build..."
+npx turbo prune @eyegents/mcp-server --docker
+
 echo "📚 Initial codebase indexing..."
 docker compose -f docker/docker-compose.yml --profile indexing up indexer
 
