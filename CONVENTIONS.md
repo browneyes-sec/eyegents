@@ -40,3 +40,34 @@
 ## Security
 - Secrets sourced from `.secrets` (gitignored). Accessed via `scripts/load-secrets.sh`.
 - All shell commands in MCP tools run through the allowlist in `mcp-server/src/tools/shell-tools.ts`.
+
+## Development Workflow
+```bash
+# One-command bootstrap
+./scripts/bootstrap.sh
+
+# Dev with hot reload
+./scripts/dev.sh
+
+# One-command Aider start (auto-detects mode)
+scripts/start-aider.sh
+
+# Index codebase (run after major changes)
+docker compose -f docker/docker-compose.yml --profile indexing up indexer
+
+# Reindex after changes (alternative)
+./scripts/reindex.sh
+
+# Run tests
+npm run test
+
+# Typecheck all packages
+npm run typecheck
+
+# Test OpenRouter connectivity
+source .venvs/openrouter/bin/activate
+python scripts/openrouter-test.py
+
+# Health checks (quick/full)
+./scripts/health-check.sh [quick|full]
+```

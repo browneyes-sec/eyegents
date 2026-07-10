@@ -104,8 +104,14 @@
 # Dev with hot reload
 ./scripts/dev.sh
 
+# One-command Aider start (auto-detects mode)
+scripts/start-aider.sh
+
 # Index codebase (run after major changes)
 docker compose -f docker/docker-compose.yml --profile indexing up indexer
+
+# Reindex after changes (alternative)
+./scripts/reindex.sh
 
 # Run tests
 npm run test
@@ -116,6 +122,9 @@ npm run typecheck
 # Test OpenRouter connectivity
 source .venvs/openrouter/bin/activate
 python scripts/openrouter-test.py
+
+# Health checks (quick/full)
+./scripts/health-check.sh [quick|full]
 ```
 
 ## Agent Routing Keywords
