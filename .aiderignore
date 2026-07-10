@@ -1,0 +1,20 @@
+# eyegents/.aiderignore
+# Files excluded from Aider context and editing
+.secrets
+.env
+.env.local
+.env.example
+config/openrouter.env
+node_modules/
+out/
+dist/
+build/
+coverage/
+.venvs/
+qdrant-data/
+ollama-data/
+*.log
+package-lock.json
+turbo.json
+.turbo/
+.opencode/

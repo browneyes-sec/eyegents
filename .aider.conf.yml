@@ -1,0 +1,52 @@
+# eyegents/.aider.conf.yml
+# Aider configuration for eyegents monorepo
+# Primary model: Nemotron 3 Super (free) via OpenRouter
+# Weak model: Nemotron 3 Nano (free) via OpenRouter
+
+model: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+weak-model: openrouter/nvidia/nemotron-3-nano-30b-a3b:free
+
+# Credential resolution (reads OPENROUTER_API_KEY from .env)
+env-file: .env
+
+# Context files (read-only, prompt-cached)
+read:
+  - CONVENTIONS.md
+  - CLAUDE.md
+
+# Git behavior — respect Conventional Commits, enforce pre-commit hooks
+auto-commits: true
+dirty-commits: false
+attribute-author: true
+attribute-committer: true
+# IMPORTANT: do NOT set no-verify — eyegents uses pre-commit hooks for lint/security
+
+# Repo map — reduce token usage in large monorepo
+map-tokens: 4096
+map-refresh: files
+
+# Aiderignore
+aiderignore: .aiderignore
+
+# History files (gitignored)
+input-history-file: .aider.input.history
+chat-history-file: .aider.chat.history.md
+model-settings-file: .aider.model.settings.yml
+model-metadata-file: .aider.model.metadata.json
+
+# Output
+dark-mode: true
+pretty: true
+stream: true
+
+# Linting — run Biome after each edit (matches eyegents toolchain)
+auto-lint: true
+lint-cmd: "npx biome lint --write"
+
+# Testing — run vitest after each edit (opt-in via --auto-test or --test-cmd)
+auto-test: false
+test-cmd: "npm test"
+
+# Shell commands
+suggest-shell-commands: true
+detect-urls: true

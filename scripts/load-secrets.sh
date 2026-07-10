@@ -22,5 +22,18 @@ while IFS='=' read -r key value; do
   echo "  [OK] $key"
 done < "$SECRETS_FILE"
 
+# Propagate to .env for Aider compatibility (Aider reads .env at git root)
+if [ -n "${OPENROUTER_API_KEY:-}" ]; then
+  REPO_ROOT="${SCRIPT_DIR}/.."
+  ENV_FILE="${REPO_ROOT}/.env"
+  # Update OPENROUTER_API_KEY in .env if present, otherwise append
+  if [ -f "$ENV_FILE" ] && grep -q "^OPENROUTER_API_KEY=" "$ENV_FILE"; then
+    sed -i "s|^OPENROUTER_API_KEY=.*|OPENROUTER_API_KEY=${OPENROUTER_API_KEY}|" "$ENV_FILE"
+  elif [ -f "$ENV_FILE" ]; then
+    echo "OPENROUTER_API_KEY=${OPENROUTER_API_KEY}" >> "$ENV_FILE"
+  fi
+  echo "  [OK] .env bridge updated for Aider"
+fi
+
 echo ""
 echo "Secrets loaded. Verify with: env | grep -E 'OPENROUTER|GH_PAT|GITHUB_PAT'"

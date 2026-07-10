@@ -43,6 +43,21 @@ docker compose -f docker/docker-compose.yml up -d mcp-server
 echo "⏳ Waiting for MCP server..."
 timeout 30 bash -c 'until curl -sf http://localhost:3001/health >/dev/null; do sleep 1; done' || echo "⚠️  MCP health check timeout (may still be starting)"
 
+echo "🤖 Setting up Aider environment..."
+if command -v python3 >/dev/null; then
+  python3 -m venv .venvs/aider
+  source .venvs/aider/bin/activate
+  pip install aider-install --quiet 2>/dev/null || pip install aider-install
+  aider-install --quiet 2>/dev/null || aider-install
+  deactivate
+  echo "   ✅ Aider installed in .venvs/aider"
+  echo "   Activate: source .venvs/aider/bin/activate"
+  echo "   Run: aider (uses .aider.conf.yml automatically)"
+else
+  echo "   ⚠️  Python3 not found — skipping Aider installation"
+  echo "   Install Python 3.12+ then run: python3 -m venv .venvs/aider"
+fi
+
 echo "✅ Verifying OpenCode..."
 if command -v opencode >/dev/null; then
   opencode --version
@@ -53,6 +68,7 @@ fi
 echo ""
 echo "✅ eyegents ready!"
 echo "   Run 'opencode' to start coding with agents"
+echo "   Run 'aider' for AI pair-programming (uses .aider.conf.yml)"
 echo "   Run './scripts/dev.sh' for development mode"
 echo "   MCP server: http://localhost:3001"
 echo "   Qdrant UI:  http://localhost:6333/dashboard"

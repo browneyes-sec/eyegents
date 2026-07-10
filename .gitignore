@@ -9,3 +9,8 @@ build/
 coverage/
 *.tsbuildinfo
 .venvs/
+
+# Aider artifacts
+.aider.input.history
+.aider.chat.history.md
+.aider.tags.cache.v*/
