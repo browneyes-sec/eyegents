@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# bin/eyegents-thin
+# Thin mode — Aider-only runtime for resource-constrained machines
+# No Docker services, no OpenCode. Just Aider + OpenRouter.
+# Usage: bin/eyegents-thin [aider-args...]
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
+
+export EYEGENTS_MODE="thin"
+export EYEGENTS_LOCAL_ENABLED="false"
+export EYEGENTS_REMOTE_ENABLED="true"
+export EYEGENTS_COST_TIER="free"
+export EYEGENTS_AGENT_SHELL="aider"
+
+# ── Helpers ──────────────────────────────────────────────────────────
+
+find_aider() {
+  if command -v aider >/dev/null 2>&1; then
+    echo "aider"
+    return 0
+  fi
+  if [ -x "${HOME}/.local/bin/aider" ]; then
+    echo "${HOME}/.local/bin/aider"
+    return 0
+  fi
+  if [ -x "${HOME}/.local/share/uv/tools/aider-chat/bin/aider" ]; then
+    echo "${HOME}/.local/share/uv/tools/aider-chat/bin/aider"
+    return 0
+  fi
+  if [ -x ".venvs/aider/bin/aider" ]; then
+    echo ".venvs/aider/bin/aider"
+    return 0
+  fi
+  return 1
+}
+
+load_openrouter_key() {
+  if [ -f ".secrets" ]; then
+    source ".secrets" 2>/dev/null || true
+  fi
+  if [ -z "${OPENROUTER_API_KEY:-}" ] && [ -f ".env" ]; then
+    OPENROUTER_API_KEY=$(grep "^OPENROUTER_API_KEY=" ".env" | cut -d= -f2-)
+  fi
+  export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"
+}
+
+# ── Run ──────────────────────────────────────────────────────────────
+
+load_openrouter_key
+
+AIDER_BIN="$(find_aider)" || {
+  echo "❌ Aider not found."
+  echo "   Install: pip3 install --user --break-system-packages aider-install && aider-install"
+  echo "   Or: ./scripts/bootstrap.sh"
+  exit 1
+}
+
+echo "🧬 Eyegents (thin mode) — Aider-only runtime"
+echo "   Aider: ${AIDER_BIN}"
+echo ""
+
+exec "${AIDER_BIN}" "$@"

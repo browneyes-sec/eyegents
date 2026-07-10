@@ -74,14 +74,31 @@ timeout 30 bash -c 'until curl -sf http://localhost:3001/health >/dev/null; do s
 
 echo "🤖 Setting up Aider environment..."
 if command -v python3 >/dev/null; then
-  python3 -m venv .venvs/aider
-  source .venvs/aider/bin/activate
-  pip install aider-install --quiet 2>/dev/null || pip install aider-install
-  aider-install --quiet 2>/dev/null || aider-install
-  deactivate
-  echo "   ✅ Aider installed in .venvs/aider"
-  echo "   Activate: source .venvs/aider/bin/activate"
-  echo "   Run: aider (uses .aider.conf.yml automatically)"
+  # Try venv first, fall back to system pip for PEP 668 environments
+  if python3 -m venv .venvs/aider --without-pip 2>/dev/null; then
+    # venv created with --without-pip, install pip manually
+    python3 -m venv .venvs/aider 2>/dev/null || true
+    if [ -f ".venvs/aider/bin/activate" ]; then
+      source .venvs/aider/bin/activate
+      pip install aider-install --quiet 2>/dev/null || true
+      aider-install --quiet 2>/dev/null || true
+      deactivate
+      echo "   ✅ Aider installed in .venvs/aider"
+    else
+      echo "   ⚠️  Venv setup incomplete — using system-level aider"
+      pip3 install --user --break-system-packages aider-install 2>/dev/null || pip3 install --user aider-install
+      aider-install 2>/dev/null || true
+      echo "   ✅ Aider installed at user level"
+    fi
+  else
+    # Fallback: install aider at user level via break-system-packages
+    echo "   ⚠️  python3-venv not available — installing at user level"
+    pip3 install --user --break-system-packages aider-install 2>/dev/null || pip3 install --user aider-install
+    aider-install 2>/dev/null || true
+    echo "   ✅ Aider installed at user level"
+  fi
+  echo "   Activate: bin/eyegents or aider"
+  echo "   Config:   .aider.conf.yml (auto-detected)"
 else
   echo "   ⚠️  Python3 not found — skipping Aider installation"
   echo "   Install Python 3.12+ then run: python3 -m venv .venvs/aider"
@@ -96,8 +113,10 @@ else
 
 echo ""
 echo "✅ eyegents ready!"
-echo "   Run 'opencode' to start coding with agents"
-echo "   Run 'aider' for AI pair-programming (uses .aider.conf.yml)"
+echo "   Run 'bin/eyegents' for auto-detected runtime (Aider primary)"
+echo "   Run 'bin/eyegents-full' for full stack with OpenCode"
+echo "   Run 'bin/eyegents-thin' for Aider-only (low resource)"
+echo "   Run 'opencode' for original agent runtime"
 echo "   Run './scripts/dev.sh' for development mode"
 echo "   MCP server: http://localhost:3001"
 echo "   Qdrant UI:  http://localhost:6333/dashboard"

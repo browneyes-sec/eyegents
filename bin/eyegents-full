@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# bin/eyegents-full
+# Full mode — Docker services + OpenCode with Aider fallback
+# For development with full agent stack (Ollama, Qdrant, MCP)
+# Usage: bin/eyegents-full [opencode-args...]
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
+
+export EYEGENTS_MODE="full"
+export EYEGENTS_LOCAL_ENABLED="true"
+export EYEGENTS_REMOTE_ENABLED="true"
+export EYEGENTS_COST_TIER="mixed"
+export EYEGENTS_AGENT_SHELL="opencode"
+
+# ── Helpers ──────────────────────────────────────────────────────────
+
+find_aider() {
+  if command -v aider >/dev/null 2>&1; then
+    echo "aider"
+    return 0
+  fi
+  if [ -x "${HOME}/.local/bin/aider" ]; then
+    echo "${HOME}/.local/bin/aider"
+    return 0
+  fi
+  if [ -x ".venvs/aider/bin/aider" ]; then
+    echo ".venvs/aider/bin/aider"
+    return 0
+  fi
+  return 1
+}
+
+load_openrouter_key() {
+  if [ -f ".secrets" ]; then
+    source ".secrets" 2>/dev/null || true
+  fi
+  if [ -z "${OPENROUTER_API_KEY:-}" ] && [ -f ".env" ]; then
+    OPENROUTER_API_KEY=$(grep "^OPENROUTER_API_KEY=" ".env" | cut -d= -f2-)
+  fi
+  export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"
+}
+
+# ── Infrastructure ───────────────────────────────────────────────────
+
+echo "🐳 Eyegents (full mode) — Full service stack"
+
+# Verify Docker
+if ! command -v docker >/dev/null 2>&1; then
+  echo "❌ Docker required for full mode"
+  echo "   Install Docker or use: bin/eyegents-thin"
+  exit 1
+fi
+
+# Load credentials
+load_openrouter_key
+
+# Start core services
+echo "🔌 Starting services..."
+docker compose -f docker/docker-compose.yml up -d ollama qdrant mcp-server 2>/dev/null || {
+  echo "⚠️  Docker services may not have started. Check: docker compose ps"
+}
+
+# ── Runtime selection ───────────────────────────────────────────────
+
+# Prefer OpenCode in full mode
+if command -v opencode >/dev/null 2>&1; then
+  echo "🤖 OpenCode agent runtime"
+  exec opencode "$@"
+fi
+
+# Fallback to Aider
+AIDER_BIN="$(find_aider)" || {
+  echo "⚠️  OpenCode not installed, Aider not found."
+  echo "   Install Aider: pip3 install --user --break-system-packages aider-install && aider-install"
+  exit 1
+}
+
+echo "⚠️  OpenCode not installed — using Aider"
+echo "   Aider: ${AIDER_BIN}"
+echo ""
+
+exec "${AIDER_BIN}" "$@"

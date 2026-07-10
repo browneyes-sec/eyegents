@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+# bin/eyegents
+# Main entry point for eyegents — auto-detects mode, runs Aider as coding agent
+# Usage: bin/eyegents [aider-args...]
+#
+# Modes:
+#   EYEGENTS_MODE=full   — Full stack with Docker services + OpenCode fallback
+#   EYEGENTS_MODE=thin   — Aider-only runtime (default on constrained machines)
+#
+# Falls back to OpenCode if available in full mode.
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
+
+# ── Helpers ──────────────────────────────────────────────────────────
+
+# Resolve the aider binary: PATH → uv-managed → venv
+find_aider() {
+  # 1. Check PATH
+  if command -v aider >/dev/null 2>&1; then
+    echo "aider"
+    return 0
+  fi
+  # 2. Check uv-managed install
+  if [ -x "${HOME}/.local/bin/aider" ]; then
+    echo "${HOME}/.local/bin/aider"
+    return 0
+  fi
+  if [ -x "${HOME}/.local/share/uv/tools/aider-chat/bin/aider" ]; then
+    echo "${HOME}/.local/share/uv/tools/aider-chat/bin/aider"
+    return 0
+  fi
+  # 3. Check project venv
+  if [ -x ".venvs/aider/bin/aider" ]; then
+    echo ".venvs/aider/bin/aider"
+    return 0
+  fi
+  return 1
+}
+
+# Load OpenRouter key from .secrets or .env
+load_openrouter_key() {
+  if [ -f ".secrets" ]; then
+    source ".secrets" 2>/dev/null || true
+  fi
+  if [ -z "${OPENROUTER_API_KEY:-}" ] && [ -f ".env" ]; then
+    OPENROUTER_API_KEY=$(grep "^OPENROUTER_API_KEY=" ".env" | cut -d= -f2-)
+  fi
+  export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"
+}
+
+# Check/setup Aider venv (only if missing)
+setup_aider_venv() {
+  if command -v aider >/dev/null 2>&1; then
+    return 0  # Already available system-wide
+  fi
+  if [ -x ".venvs/aider/bin/aider" ]; then
+    return 0  # Already available in venv
+  fi
+  echo "🔧 Setting up Aider environment..."
+  if ! command -v python3 >/dev/null; then
+    echo "❌ Python 3 required for Aider"
+    return 1
+  fi
+  python3 -m venv ".venvs/aider" 2>/dev/null || {
+    echo "⚠️  python3-venv not available. Using system pip."
+    pip3 install --user --break-system-packages aider-install 2>/dev/null || pip3 install --user aider-install
+    return 0
+  }
+  source ".venvs/aider/bin/activate"
+  pip install aider-install --quiet 2>/dev/null || true
+  aider-install --quiet 2>/dev/null || true
+  deactivate
+}
+
+# ── Mode detection ───────────────────────────────────────────────────
+
+if [ -z "${EYEGENTS_MODE:-}" ]; then
+  # Run doctor for diagnostics
+  if [ -x "scripts/eyegents-doctor.sh" ]; then
+    bash "scripts/eyegents-doctor.sh" 2>/dev/null || true
+  fi
+
+  # Auto-detect: full if Docker + >=8GB RAM, thin otherwise
+  MODE="thin"
+  if command -v docker >/dev/null 2>&1; then
+    if [ -f "/proc/meminfo" ]; then
+      MEM_KB=$(grep MemTotal /proc/meminfo | awk '{print $2}' 2>/dev/null || echo "0")
+      if [ -n "$MEM_KB" ] && [ "$MEM_KB" -gt 0 ]; then
+        MEM_GB=$((MEM_KB / 1024 / 1024))
+        [ "$MEM_GB" -ge 8 ] && MODE="full"
+      fi
+    fi
+  fi
+  export EYEGENTS_MODE="$MODE"
+fi
+
+# ── Environment setup ────────────────────────────────────────────────
+
+load_openrouter_key
+
+if [ -z "${OPENROUTER_API_KEY:-}" ]; then
+  echo "⚠️  OPENROUTER_API_KEY not set. Copy .secrets.example to .secrets and add your key."
+  echo "   Aider will use local models only."
+fi
+
+# ── Bootstrap if needed ──────────────────────────────────────────────
+
+if [ ! -x ".venvs/aider/bin/aider" ] && ! command -v aider >/dev/null 2>&1; then
+  setup_aider_venv
+fi
+
+# ── Runtime dispatch ─────────────────────────────────────────────────
+
+case "${EYEGENTS_MODE}" in
+  full)
+    # Full mode: Docker services + OpenCode (fallback to Aider)
+    if ! command -v docker >/dev/null 2>&1; then
+      echo "❌ Docker required for full mode. Falling back to thin."
+      EYEGENTS_MODE="thin"
+    else
+      docker compose -f docker/docker-compose.yml up -d ollama qdrant mcp-server 2>/dev/null || true
+      echo "🔌 Services: Ollama + Qdrant + MCP"
+
+      if command -v opencode >/dev/null 2>&1; then
+        echo "🤖 OpenCode agent runtime"
+        exec opencode "$@"
+      fi
+      echo "⚠️  OpenCode not installed — using Aider"
+    fi
+    ;;&
+esac
+
+# Thin mode / fallback: Aider as primary coding agent
+AIDER_BIN="$(find_aider)" || {
+  echo "❌ Aider not found. Install: pip install aider-install && aider-install"
+  echo "   Or: python3 -m venv .venvs/aider && source .venvs/aider/bin/activate && pip install aider-install && aider-install"
+  exit 1
+}
+
+echo "🤖 Eyegents — Aider AI Pair-Programming Runtime"
+echo "   Mode: ${EYEGENTS_MODE}"
+echo "   Aider: ${AIDER_BIN}"
+echo ""
+
+# If no args, let Aider run interactively
+if [ $# -eq 0 ]; then
+  exec "${AIDER_BIN}"
+fi
+
+# Run Aider with arguments
+exec "${AIDER_BIN}" "$@"
