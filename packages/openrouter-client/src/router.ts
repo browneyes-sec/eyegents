@@ -131,6 +131,16 @@ const DEFAULT_CONFIG: RoutesConfig = {
 				description: "DeepSeek V4 Pro as secondary",
 			},
 		},
+		aider: {
+			primary: {
+				model: "nemotron-super",
+				description: "Nemotron 3 Super for Aider coding tasks",
+			},
+			fallback: {
+				model: "deepseek-flash",
+				description: "DeepSeek V4 Flash as paid fallback",
+			},
+		},
 	},
 	localModels: {
 		primary: "qwen2.5-coder:7b",

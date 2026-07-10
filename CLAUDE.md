@@ -71,6 +71,7 @@
 | ops | local qwen2.5-coder:7b | Nemotron 3 Super (free) | Infra tasks stay local |
 | fullstack | DeepSeek V4 Flash | local qwen2.5-coder:7b | E2E features |
 | certifier | Nemotron 3 Ultra | DeepSeek V4 Pro | Deep reasoning for security |
+| aider | Nemotron 3 Super (free) | DeepSeek V4 Flash | AI pair-programming via Aider adapter |
 
 ## OpenRouter Models
 | Model | ID | Context | Cost | Use Case |
@@ -79,6 +80,7 @@
 | Nemotron 3 Ultra | `nvidia/nemotron-3-ultra-550b-a55b` | 1M | $0.001/$0.003 | Security audits |
 | DeepSeek V4 Flash | `deepseek/deepseek-v4-flash` | 1M | $0.112/$0.224 | Fast coding |
 | DeepSeek V4 Pro | `deepseek/deepseek-v4-pro` | 1M | $0.435/$0.87 | Complex reasoning |
+| Nemotron 3 Nano (free) | `nvidia/nemotron-3-nano-30b-a3b:free` | 256K | $0 | Weak model (edit decisions) |
 
 ## External Fallback Strategy
 | Scenario | Fallback |
@@ -125,6 +127,8 @@ python scripts/openrouter-test.py
 | ops | deploy, pipeline, monitor, logs, terraform, ansible, ci, cd |
 | certifier | security, audit, compliance, vulnerability, secrets, gdpr |
 | fullstack | feature, end-to-end, full stack, integration |
+| certifier | security, audit, compliance, vulnerability, secrets, gdpr |
+| aider | code, edit, refactor, implement, pair-program, ai coding |
 
 ## Decision Logging Format
 When making architectural decisions, log via:

@@ -10,8 +10,8 @@ const client = new OpenRouterClient({
 
 const completeSchema = z.object({
   prompt: z.string().describe("The user prompt or task description"),
-  agentRole: z.enum(["orchestrator", "backend", "frontend", "qa", "ops", "fullstack", "certifier"])
-    .describe("The agent role requesting completion"),
+    agentRole: z.enum(["orchestrator", "backend", "frontend", "qa", "ops", "fullstack", "certifier", "aider"])
+      .describe("The agent role requesting completion"),
   taskComplexity: z.enum(["simple", "complex"]).optional()
     .describe("Override complexity detection (auto-detected if omitted)"),
   temperature: z.number().min(0).max(2).optional().default(0.7)
@@ -37,10 +37,10 @@ export const openrouterTools = [
       properties: {
         prompt: { type: "string", description: "The user prompt or task description" },
         agentRole: {
-          type: "string",
-          enum: ["orchestrator", "backend", "frontend", "qa", "ops", "fullstack", "certifier"],
-          description: "The agent role requesting completion"
-        },
+        type: "string",
+        enum: ["orchestrator", "backend", "frontend", "qa", "ops", "fullstack", "certifier", "aider"],
+        description: "The agent role requesting completion"
+      },
         taskComplexity: {
           type: "string",
           enum: ["simple", "complex"],

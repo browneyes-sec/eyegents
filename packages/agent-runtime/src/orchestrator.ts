@@ -8,7 +8,7 @@ import {
 import { contextAssembler } from "@eyegents/context-engine";
 import { mcpClient } from "@eyegents/mcp-client";
 
-type RoutingKey = "backend" | "frontend" | "qa" | "ops" | "certifier" | "fullstack";
+type RoutingKey = "backend" | "frontend" | "qa" | "ops" | "certifier" | "fullstack" | "aider";
 
 const ROUTING_RULES: Record<RoutingKey, string[]> = {
   backend: ["api", "database", "server", "auth", "deploy", "k8s", "docker", "microservice", "grpc", "rest"],
@@ -16,7 +16,8 @@ const ROUTING_RULES: Record<RoutingKey, string[]> = {
   qa: ["test", "spec", "coverage", "lint", "benchmark", "e2e", "integration", "unit", "jest", "vitest", "playwright"],
   ops: ["deploy", "pipeline", "monitor", "logs", "terraform", "ansible", "ci", "cd", "infrastructure", "kubernetes"],
   certifier: ["security", "audit", "compliance", "vulnerability", "secrets", "gdpr", "hipaa", "pci"],
-  fullstack: ["feature", "end-to-end", "full stack", "integration", "fullstack"]
+  fullstack: ["feature", "end-to-end", "full stack", "integration", "fullstack"],
+  aider: ["code", "edit", "refactor", "implement", "pair-program", "aider", "ai coding"]
 };
 
 export class Orchestrator {
@@ -72,7 +73,8 @@ export class Orchestrator {
       qa: ["Unit tests >80% coverage", "Integration tests", "E2E tests", "Performance benchmarks"],
       ops: ["CI/CD pipeline updated", "Monitoring configured", "Rollback plan", "Documentation"],
       fullstack: ["Backend + Frontend integrated", "E2E flow works", "Tests passing"],
-      certifier: ["No secrets exposed", "AuthZ on all endpoints", "Input validation", "Dependency scan clean"]
+      certifier: ["No secrets exposed", "AuthZ on all endpoints", "Input validation", "Dependency scan clean"],
+      aider: ["Code edited", "Diff captured", "Lint/typecheck passing", "Decision logged"]
     };
     return criteria[role] || [];
   }

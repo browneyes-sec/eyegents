@@ -121,6 +121,16 @@
         "model": "deepseek-pro",
         "description": "DeepSeek V4 Pro as secondary option"
       }
+    },
+    "aider": {
+      "primary": {
+        "model": "nemotron-super",
+        "description": "Nemotron 3 Super as default for Aider coding tasks"
+      },
+      "fallback": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash as paid fallback for Aider"
+      }
     }
   },
   "localModels": {

@@ -15,6 +15,7 @@ import { githubTools } from "./tools/github-tools.js";
 import { fsTools } from "./tools/fs-tools.js";
 import { shellTools } from "./tools/shell-tools.js";
 import { skillTools } from "./tools/skill-tools.js";
+import { aiderTools } from "./tools/aider-tools.js";
 
 const logger = pino({ level: process.env.LOG_LEVEL || "warn" });
 const PORT = process.env.PORT || 3001;
@@ -24,7 +25,8 @@ const ALL_TOOLS = [
   ...githubTools,
   ...fsTools,
   ...shellTools,
-  ...skillTools
+  ...skillTools,
+  ...aiderTools
 ];
 
 const server = new Server(
