@@ -17,6 +17,28 @@ RUN npx turbo run build --filter=@eyegents/mcp-server
 
 FROM base AS production
 ENV NODE_ENV=production
+
+# Python + Aider for AI pair-programming via MCP tools
+# Installed in isolated venv to avoid PEP 668 system Python restrictions
+# Slim: remove pip/setuptools, pyc caches, and test dirs after install
+RUN apk add --no-cache python3 py3-pip && \
+    python3 -m venv /opt/aider-venv && \
+    /opt/aider-venv/bin/pip install --no-cache-dir aider-chat==0.86.2 && \
+    ln -sf /opt/aider-venv/bin/aider /usr/local/bin/aider && \
+    /opt/aider-venv/bin/pip uninstall -y pip setuptools wheel 2>/dev/null || true && \
+    find /opt/aider-venv -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true && \
+    find /opt/aider-venv -name '*.pyc' -delete 2>/dev/null || true && \
+    find /opt/aider-venv -path '*/tests/*' -type f -delete 2>/dev/null || true && \
+    find /opt/aider-venv -path '*/test/*' -type f -delete 2>/dev/null || true && \
+    rm -rf /root/.cache /tmp/*
+
+# Aider config files at repo root (read by aider_execute tool)
+COPY .aider.conf.yml ./
+COPY CONVENTIONS.md ./
+COPY .aiderignore ./
+COPY .aider.model.settings.yml ./
+COPY .aider.model.metadata.json ./
+
 COPY --from=deps /app/package.json ./
 COPY --from=deps /app/package-lock.json ./
 COPY --from=builder /app/mcp-server/dist ./mcp-server/dist
@@ -40,7 +62,7 @@ COPY --from=builder /app/packages/agent-runtime/package.json ./packages/agent-ru
 COPY --from=builder /app/vector-index/dist ./vector-index/dist
 COPY --from=builder /app/vector-index/package.json ./vector-index/package.json
 RUN npm ci --omit=dev
-WORKDIR /app/mcp-server
+WORKDIR /app
 EXPOSE 3001
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 CMD wget -qO- http://localhost:3001/health || exit 1
-ENTRYPOINT ["node", "dist/index.js"]
+ENTRYPOINT ["node", "mcp-server/dist/index.js"]

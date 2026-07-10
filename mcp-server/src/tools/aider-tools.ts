@@ -66,14 +66,10 @@ export const aiderTools = [
         return {
           success: false,
           error:
-            "Aider not available in MCP container. " +
-            "To use Aider from the host directly: " +
-            "\n  import { AiderAdapter } from '@eyegents/aider-adapter'" +
-            "\n  const adapter = new AiderAdapter();" +
-            "\n  const result = await adapter.execute({ task, files });" +
-            "\n\nTo add Aider to the MCP container:" +
-            "\n  Add to Dockerfile: RUN apk add --no-cache python3 py3-pip && pip3 install aider-install && aider-install",
-          needsDockerSetup: true,
+            "Aider not available in this environment. " +
+            "Install with: pip3 install aider-chat && aider --version" +
+            "\n\nFor Docker, rebuild the image: docker compose build mcp-server" +
+            "\n\nThe container image includes aider-chat when built with the Dockerfile at mcp-server/Dockerfile.",
         };
       }
 
@@ -136,12 +132,19 @@ export const aiderTools = [
       let version = "unknown";
       if (available) {
         try {
-          version = execSync(
-            "python3 -m aider.chat --version 2>/dev/null || echo 'unknown'",
-            { encoding: "utf-8", timeout: 10_000 },
-          ).trim();
+          version = execSync("aider --version 2>/dev/null || echo 'unknown'", {
+            encoding: "utf-8",
+            timeout: 10_000,
+          }).trim();
         } catch {
-          version = "unknown";
+          try {
+            version = execSync(
+              "python3 -m aider --version 2>/dev/null || echo 'unknown'",
+              { encoding: "utf-8", timeout: 10_000 },
+            ).trim();
+          } catch {
+            version = "unknown";
+          }
         }
       }
       return {
@@ -161,21 +164,30 @@ export const aiderTools = [
 
 function checkAiderAvailability(): boolean {
   try {
-    execSync("python3 -c 'import aider; print(aider.__version__)' 2>/dev/null", {
+    execSync("aider --version", {
       encoding: "utf-8",
       timeout: 10_000,
+      stdio: "ignore",
     });
     return true;
   } catch {
-    return false;
+    // Fallback: check via python -m aider
+    try {
+      execSync("python3 -m aider --version", {
+        encoding: "utf-8",
+        timeout: 10_000,
+        stdio: "ignore",
+      });
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
 
 function buildAiderCommand(params: z.infer<typeof executeSchema>): string {
   const parts: string[] = [
-    "python3",
-    "-m",
-    "aider.chat",
+    "aider",
     "--model",
     params.model || "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
     "--weak-model",

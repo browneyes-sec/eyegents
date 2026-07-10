@@ -1,6 +1,8 @@
 node_modules
 .git
 *.md
+!CONVENTIONS.md
+!CLAUDE.md
 .env*
 .opencode
 .github
