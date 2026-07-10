@@ -20,7 +20,8 @@
   "dependencies": {
     "@eyegents/shared-types": "*",
     "@eyegents/context-engine": "*",
-    "@eyegents/mcp-client": "*"
+    "@eyegents/mcp-client": "*",
+    "@eyegents/aider-adapter": "*"
   },
   "devDependencies": {
     "typescript": "^5.5.0"

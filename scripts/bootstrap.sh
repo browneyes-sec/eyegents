@@ -4,17 +4,46 @@ set -euo pipefail
 
 echo "🚀 eyegents bootstrap starting..."
 
-command -v docker >/dev/null || { echo "❌ Docker required"; exit 1; }
-command -v node >/dev/null || { echo "❌ Node 20+ required"; exit 1; }
-command -v npm >/dev/null || { echo "❌ npm required"; exit 1; }
+# Mode detection from environment or doctor suggestion
+MODE=${EYEGENTS_MODE:-}
+if [ -z "$MODE" ]; then
+  if [ -x "scripts/eyegents-doctor.sh" ]; then
+    scripts/eyegents-doctor.sh
+    echo "Note: Export EYEGENTS_MODE based on doctor output above"
+  fi
+  # Default: try to detect from docker availability and memory
+  if command -v docker >/dev/null; then
+    DOCKER_AVAILABLE=1
+  else
+    DOCKER_AVAILABLE=0
+  fi
 
-NODE_VERSION=$(node --version | cut -d. -f1 | sed 's/v//')
-[[ $NODE_VERSION -ge 20 ]] || { echo "❌ Node 20+ required (found v$NODE_VERSION)"; exit 1; }
+  TOTAL_MEM=$(grep MemTotal /proc/meminfo 2>/dev/null | awk '{print $2}')
+  if [ -n "${TOTAL_MEM:-}" ]; then
+    GB=$((TOTAL_MEM / 1024 / 1024))
+    if [ "$DOCKER_AVAILABLE" -eq 1 ] && [ "$GB" -ge 8 ]; then
+      MODE="full"
+    else
+      MODE="thin"
+    fi
+  else
+    MODE="thin"
+  fi
+fi
 
-[[ -f .env ]] || { echo "📝 Creating .env from example..."; cp .env.example .env; }
+echo "🔧 Detected mode: $MODE"
+export EYEGENTS_MODE="$MODE"
+
+# Mode-specific setup
+if [ "$MODE" = "full" ]; then
+  echo "🐳 Full mode: Starting Docker services (Ollama + Qdrant)..."
+  docker compose -f docker/docker-compose.yml up -d ollama qdrant
+else
+  echo "🔧 Thin mode: Skipping Docker services (local development)"
+fi
 
 echo "🐳 Starting core services (Ollama + Qdrant)..."
-docker compose -f docker/docker-compose.yml up -d ollama qdrant
+command -v docker >/dev/null || { echo "❌ Docker required"; exit 1; }
 
 echo "⏳ Waiting for Ollama..."
 timeout 120 bash -c 'until docker exec eyegents-ollama ollama ps &>/dev/null; do sleep 2; done' || { echo "❌ Ollama health check failed"; exit 1; }
@@ -63,7 +92,7 @@ if command -v opencode >/dev/null; then
   opencode --version
 else
   echo "⚠️  OpenCode not installed. Install with: curl -fsSL https://opencode.ai/install | bash"
-fi
+  fi
 
 echo ""
 echo "✅ eyegents ready!"
@@ -73,3 +102,6 @@ echo "   Run './scripts/dev.sh' for development mode"
 echo "   MCP server: http://localhost:3001"
 echo "   Qdrant UI:  http://localhost:6333/dashboard"
 echo "   Ollama API: http://localhost:11434"
+echo ""
+echo "Mode info:"
+echo "   EYEGENTS_MODE=$EYEGENTS_MODE"

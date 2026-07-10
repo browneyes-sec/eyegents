@@ -1,6 +1,6 @@
 import { spawn, execSync } from "node:child_process";
-import { existsSync } from "node:fs";
-import { readFile, access } from "node:fs/promises";
+import { existsSync, accessSync } from "node:fs";
+import { constants } from "node:fs";
 import {
   type AiderRequest,
   type AiderResult,
@@ -30,30 +30,70 @@ export class AiderAdapter {
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
+  /** Cache for resolved aider binary path */
+  private aiderBinary: string | null = null;
+
+  /** Known locations to search for the aider binary */
+  private readonly AIDER_PATHS = [
+    "aider", // PATH lookup
+    ".venvs/aider/bin/aider",
+    ".venvs/aider/bin/python3", // Will be used with -m aider.chat
+    `${process.env.HOME}/.local/bin/aider`,
+    `${process.env.HOME}/.local/share/uv/tools/aider-chat/bin/aider`,
+    "/usr/local/bin/aider",
+  ];
+
   /**
-   * Check if Aider is installed and available in the venv.
+   * Resolve the path to the aider binary.
+   * Tries common locations: PATH, uv-managed install, project venv.
+   */
+  private resolveAiderBinary(): string {
+    if (this.aiderBinary) return this.aiderBinary;
+
+    for (const candidate of this.AIDER_PATHS) {
+      try {
+        // Try direct executable check
+        if (candidate === "aider") {
+          execSync("which aider", { stdio: "ignore", timeout: 3000 });
+          this.aiderBinary = "aider";
+          return this.aiderBinary;
+        }
+        // Try file existence
+        if (existsSync(candidate)) {
+          accessSync(candidate, constants.X_OK);
+          this.aiderBinary = candidate;
+          return this.aiderBinary;
+        }
+      } catch {
+        continue;
+      }
+    }
+
+    // Fallback: return "aider" and let the spawn fail with a clear error
+    this.aiderBinary = "aider";
+    return this.aiderBinary;
+  }
+
+  /**
+   * Check if Aider is installed and available on the system.
    */
   async checkAvailability(): Promise<AiderStatus> {
-    const venvPython = `${this.config.venvPath}/bin/python3`;
     const status: AiderStatus = {
       available: false,
       venvPath: this.config.venvPath,
     };
 
     try {
-      await access(venvPython);
-    } catch {
-      status.error = `Python venv not found at ${this.config.venvPath}. Run: python3 -m venv .venvs/aider && pip install aider-install && aider-install`;
-      return status;
-    }
-
-    try {
-      const version = await this.execAider(["--version"]);
+      const binary = this.resolveAiderBinary();
+      const version = execSync(`${binary} --version 2>&1`, {
+        encoding: "utf-8",
+        timeout: 10_000,
+      });
       status.available = true;
-      status.version = version.stdout.trim();
+      status.version = version.trim();
       return status;
     } catch (e) {
-      status.error = `Aider not available in venv: ${String(e)}`;
+      status.error = `Aider binary not found. Install: pip install aider-install && aider-install. Tried: ${this.AIDER_PATHS.join(", ")}`;
       return status;
     }
   }
@@ -171,6 +211,7 @@ export class AiderAdapter {
 
   /**
    * Spawn Aider as a subprocess and capture output.
+   * Supports PATH-installed, uv-managed, and venv-based installs.
    */
   private async spawnAider(
     args: string[],
@@ -182,11 +223,16 @@ export class AiderAdapter {
     exitCode: number;
   }> {
     const workDir = request.workDir || this.config.repoRoot;
+    const binary = this.resolveAiderBinary();
+
+    // uv-managed or pipx installs: binary is standalone
+    // venv installs: use python3 -m aider.chat
+    const isPythonVenv = binary.endsWith("python3");
+    const cmd = isPythonVenv ? binary : binary;
+    const cmdArgs = isPythonVenv ? ["-m", "aider.chat", ...args] : args;
 
     return new Promise((resolve, reject) => {
-      const venvPython = `${this.config.venvPath}/bin/python3`;
-      // Use `python3 -m aider` to invoke from the venv
-      const child = spawn(venvPython, ["-m", "aider.chat", ...args], {
+      const child = spawn(cmd, cmdArgs, {
         cwd: workDir,
         env: {
           ...process.env,
@@ -221,42 +267,6 @@ export class AiderAdapter {
       child.on("error", (err) => {
         reject(err);
       });
-    });
-  }
-
-  /**
-   * Execute a quick Aider command for version checks.
-   */
-  private async execAider(
-    args: string[],
-  ): Promise<{ stdout: string; stderr: string }> {
-    const venvPython = `${this.config.venvPath}/bin/python3`;
-    return new Promise((resolve, reject) => {
-      const child = spawn(
-        venvPython,
-        ["-m", "aider.chat", ...args],
-        {
-          cwd: this.config.repoRoot,
-          env: {
-            ...process.env,
-            OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY || "",
-          },
-          stdio: ["pipe", "pipe", "pipe"],
-          timeout: 30_000,
-        },
-      );
-
-      let stdout = "";
-      let stderr = "";
-
-      child.stdout?.on("data", (data: Buffer) => {
-        stdout += data.toString();
-      });
-      child.stderr?.on("data", (data: Buffer) => {
-        stderr += data.toString();
-      });
-      child.on("close", () => resolve({ stdout, stderr }));
-      child.on("error", reject);
     });
   }
 

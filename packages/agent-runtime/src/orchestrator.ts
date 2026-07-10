@@ -7,6 +7,7 @@ import {
 } from "@eyegents/shared-types";
 import { contextAssembler } from "@eyegents/context-engine";
 import { mcpClient } from "@eyegents/mcp-client";
+import { AiderAdapter } from "@eyegents/aider-adapter";
 
 type RoutingKey = "backend" | "frontend" | "qa" | "ops" | "certifier" | "fullstack" | "aider";
 
@@ -83,6 +84,51 @@ export class Orchestrator {
     return {
       ...message,
       payload: { ...message.payload, context: await contextAssembler.assemble(message.payload.description) }
+    };
+  }
+
+  /**
+   * Execute a routed agent task.
+   *
+   * For the `aider` agent, invokes AiderAdapter directly (host-side Python CLI).
+   * For other agents, returns the message unchanged — execution is handled
+   * externally via MCP tools or the OpenCode runtime.
+   */
+  async execute(message: AgentMessage): Promise<AgentMessage> {
+    if (message.to !== "aider") {
+      return message;
+    }
+
+    const adapter = new AiderAdapter();
+    const result = await adapter.execute({
+      task: message.payload.description,
+      files: message.payload.artifacts?.map((a) => a.path) || [],
+      sessionId: message.id,
+      readOnly: false,
+      autoCommit: false,
+    });
+
+    return {
+      id: `${message.id}-result`,
+      from: "aider" as AgentRole,
+      to: message.from,
+      type: "result",
+      payload: {
+        taskId: message.payload.taskId,
+        description: message.payload.description,
+        context: message.payload.context,
+        acceptanceCriteria: message.payload.acceptanceCriteria,
+        artifacts: (result.changedFiles || []).map((path) => ({
+          type: "code",
+          path,
+          content: result.diff || "",
+        })),
+      },
+      metadata: {
+        timestamp: new Date().toISOString(),
+        tokenBudget: message.metadata.tokenBudget,
+        priority: message.metadata.priority,
+      },
     };
   }
 
