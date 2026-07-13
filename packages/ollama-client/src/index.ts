@@ -50,6 +50,7 @@ const PROVIDER_CONFIG: Record<Provider, { baseURL: string; models: string[] }> =
 
 class HealthMonitor {
   private status = new Map<Provider, HealthStatus>();
+  private lastCheckTimes = new Map<Provider, number>();
   private readonly CIRCUIT_THRESHOLD = 5;
   private readonly RECOVERY_TIMEOUT = 60000;
 
@@ -88,7 +89,7 @@ class HealthMonitor {
   shouldUse(provider: Provider): boolean {
     const status = this.status.get(provider);
     if (!status) return true;
-    if (status.circuitOpen && Date.now() - (status as any).lastCheck > this.RECOVERY_TIMEOUT) {
+    if (status.circuitOpen && Date.now() - (this.lastCheckTimes.get(provider) || 0) > this.RECOVERY_TIMEOUT) {
       status.circuitOpen = false;
       return true;
     }
@@ -101,7 +102,7 @@ class HealthMonitor {
       status.failureCount++;
       if (status.failureCount >= this.CIRCUIT_THRESHOLD) {
         status.circuitOpen = true;
-        (status as any).lastCheck = Date.now();
+        this.lastCheckTimes.set(provider, Date.now());
       }
     }
   }
@@ -111,6 +112,8 @@ class HealthMonitor {
     if (status) {
       status.failureCount = 0;
       status.circuitOpen = false;
+      // Also clear the lastCheck time when we recover
+      this.lastCheckTimes.delete(provider);
     }
   }
 }
