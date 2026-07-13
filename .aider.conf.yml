@@ -1,10 +1,11 @@
 # eyegents/.aider.conf.yml
 # Aider configuration for eyegents monorepo
-# Primary model: Nemotron 3 Super (free) via OpenRouter
-# Weak model: Nemotron 3 Nano (free) via OpenRouter
+# Primary model: Qwen3 Coder (free) via OpenRouter
+# Weak model: Qwen3 Coder (free) — same model for consistency
+# Long-context fallback: DeepSeek V4 Flash (free) via OpenRouter
 
-model: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-weak-model: openrouter/nvidia/nemotron-3-nano-30b-a3b:free
+model: openrouter/qwen/qwen3-coder:free
+weak-model: openrouter/qwen/qwen3-coder:free
 
 # Credential resolution (reads OPENROUTER_API_KEY from .env)
 env-file: .env

@@ -66,13 +66,21 @@ services:
     container_name: eyegents-mcp
     restart: unless-stopped
     ports: ["3001:3001"]
+    volumes:
+      # Mount host repo to WORKDIR (/app) so aider_execute MCP tool
+      # can run git diff against real source files.
+      - ..:/app:rw
     environment:
       - QDRANT_URL=http://qdrant:6333
       - OLLAMA_URL=http://ollama:11434
       - GITHUB_TOKEN=${GITHUB_TOKEN}
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - NEMOTRON_MODEL=${NEMOTRON_MODEL:-nvidia/nemotron-3-super-120b-a12b:free}
-      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek/deepseek-v4-flash}
+      - CODING_MODEL=${CODING_MODEL:-openrouter/qwen/qwen3-coder:free}
+      - FALLBACK_MODEL=${FALLBACK_MODEL:-openrouter/deepseek/deepseek-v4-flash:free}
+      - ROUTER_MODEL=${ROUTER_MODEL:-openrouter/free}
+      # Legacy aliases (backward compat)
+      - NEMOTRON_MODEL=${NEMOTRON_MODEL:-}
+      - DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-}
       - GH_PAT=${GH_PAT}
       - OPENROUTER_SITE_URL=https://github.com/browneyes-sec/eyegents
       - OPENROUTER_SITE_TITLE=eyegents

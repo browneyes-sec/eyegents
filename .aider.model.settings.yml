@@ -2,9 +2,8 @@
 # Model behavior overrides for OpenRouter models used by Aider
 # HTTP-Referer + X-Title headers ensure requests are attributed to eyegents
 
-- name: openrouter/nvidia/nemotron-3-super-120b-a12b:free
+- name: openrouter/qwen/qwen3-coder:free
   edit_format: diff
-  weak_model_name: openrouter/nvidia/nemotron-3-nano-30b-a3b:free
   use_repo_map: true
   send_undo_reply: false
   examples_as_sys_msg: true
@@ -15,7 +14,17 @@
       HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
       X-Title: "eyegents"
 
-- name: openrouter/nvidia/nemotron-3-nano-30b-a3b:free
+- name: openrouter/deepseek/deepseek-v4-flash:free
+  edit_format: diff
+  use_repo_map: true
+  extra_params:
+    max_tokens: 8192
+    temperature: 0.2
+    extra_headers:
+      HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
+      X-Title: "eyegents"
+
+- name: openrouter/free
   edit_format: whole
   use_repo_map: false
   extra_params:
@@ -25,9 +34,9 @@
       HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
       X-Title: "eyegents"
 
-- name: openrouter/deepseek/deepseek-v4-flash
+- name: openrouter/nvidia/nemotron-3-ultra-550b-a55b
   edit_format: diff
-  weak_model_name: openrouter/nvidia/nemotron-3-nano-30b-a3b:free
+  weak_model_name: openrouter/qwen/qwen3-coder:free
   use_repo_map: true
   extra_params:
     max_tokens: 8192
@@ -36,9 +45,9 @@
       HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
       X-Title: "eyegents"
 
-- name: openrouter/nvidia/nemotron-3-ultra-550b-a55b
+- name: openrouter/deepseek/deepseek-v4-pro
   edit_format: diff
-  weak_model_name: openrouter/nvidia/nemotron-3-nano-30b-a3b:free
+  weak_model_name: openrouter/qwen/qwen3-coder:free
   use_repo_map: true
   extra_params:
     max_tokens: 8192

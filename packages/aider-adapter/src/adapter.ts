@@ -1,18 +1,13 @@
-import { spawn, execSync } from "node:child_process";
-import { existsSync, accessSync } from "node:fs";
+import { execSync, spawn } from "node:child_process";
+import { accessSync, existsSync } from "node:fs";
 import { constants } from "node:fs";
-import {
-  type AiderRequest,
-  type AiderResult,
-  type AiderStatus,
-  type AiderAdapterConfig,
-} from "./types.js";
+import type { AiderAdapterConfig, AiderRequest, AiderResult, AiderStatus } from "./types.js";
 
 const DEFAULT_CONFIG: AiderAdapterConfig = {
   venvPath: ".venvs/aider",
   repoRoot: process.cwd(),
-  defaultModel: "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
-  defaultWeakModel: "openrouter/nvidia/nemotron-3-nano-30b-a3b:free",
+  defaultModel: "openrouter/qwen/qwen3-coder:free",
+  defaultWeakModel: "openrouter/qwen/qwen3-coder:free",
   timeoutMs: 300_000,
 };
 
@@ -64,9 +59,7 @@ export class AiderAdapter {
           this.aiderBinary = candidate;
           return this.aiderBinary;
         }
-      } catch {
-        continue;
-      }
+      } catch {}
     }
 
     // Fallback: return "aider" and let the spawn fail with a clear error
@@ -121,9 +114,7 @@ export class AiderAdapter {
 
       const tokenEstimate = {
         input: Math.ceil(request.task.length / 3.5),
-        output: result.stdout
-          ? Math.ceil(result.stdout.length / 3.5)
-          : 0,
+        output: result.stdout ? Math.ceil(result.stdout.length / 3.5) : 0,
       };
 
       return {
@@ -292,7 +283,8 @@ export class AiderAdapter {
   private parseDiff(diff: string): string[] {
     const files: string[] = [];
     const regex = /^diff --git a\/(.+?) b\/(.+?)$/gm;
-    let match;
+    let match: RegExpExecArray | null;
+    // biome-ignore lint/suspicious/noAssignInExpressions: regex exec pattern
     while ((match = regex.exec(diff)) !== null) {
       files.push(match[1]);
     }
@@ -304,15 +296,11 @@ export class AiderAdapter {
    */
   private extractSummary(output: string): string | undefined {
     // Look for Aider's summary patterns
-    const summaryMatch = output.match(
-      /Summary:\s*(.+?)(?:\n|$)/i,
-    );
+    const summaryMatch = output.match(/Summary:\s*(.+?)(?:\n|$)/i);
     if (summaryMatch) return summaryMatch[1].trim();
 
     // Look for "Applied edit" patterns
-    const editMatch = output.match(
-      /Applied\s+edit\s+to\s+(.+?)(?:\n|$)/i,
-    );
+    const editMatch = output.match(/Applied\s+edit\s+to\s+(.+?)(?:\n|$)/i);
     if (editMatch) return `Edited: ${editMatch[1].trim()}`;
 
     return undefined;

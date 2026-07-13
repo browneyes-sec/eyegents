@@ -144,13 +144,13 @@ bge-m3:latest
 #### Remote Models (OpenRouter)
 ```bash
 # Free tier models (default for cost efficiency)
-nvidia/nemotron-3-super-120b-a12b:free
-nvidia/nemotron-3-nano-30b-a3b:free
+qwen/qwen3-coder:free          # Primary coding model (1M context)
+deepseek/deepseek-v4-flash:free  # Long-context fallback (1M context)
+openrouter/free                # General fallback/router
 
 # Paid tier models for complex tasks
-nvidia/nemotron-3-ultra-550b-a55b
-deepseek/deepseek-v4-pro
-deepseek/deepseek-v4-flash
+nvidia/nemotron-3-ultra-550b-a55b  # Security, audits ($0.001/$0.003)
+deepseek/deepseek-v4-pro           # Complex reasoning ($0.435/$0.87)
 ```
 
 #### Agent-to-Model Routing
@@ -159,14 +159,15 @@ deepseek/deepseek-v4-flash
 # OpenRouter routing configuration in config/openrouter-routes.json
 # Each agent has defined primary and fallback models
 # Free models used for routine tasks, paid models for complex work
+# Primary: qwen3-coder:free → Fallback: deepseek-v4-flash:free → Router: openrouter/free
 ```
 
 ### Aider Configuration
 
 The `.aider.conf.yml` is automatically used by Aider:
 ```yaml
-model: openrouter/nvidia/nemotron-3-super-120b-a12b:free
-weak-model: openrouter/nvidia/nemotron-3-nano-30b-a3b:free
+model: openrouter/qwen/qwen3-coder:free
+weak-model: openrouter/qwen/qwen3-coder:free
 
 # Reads from repo root
 read:

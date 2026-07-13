@@ -77,10 +77,10 @@ Edit `config/openrouter-routes.json` to customize agent-to-model mappings:
 
 | Reference | OpenRouter ID | Cost | Best For |
 |-----------|---------------|------|----------|
-| `nemotron-super` | `nvidia/nemotron-3-super-120b-a12b:free` | Free | Orchestration, planning |
-| `nemotron-nano` | `nvidia/nemotron-3-nano-30b-a3b:free` | Free | Lightweight tasks |
+| `qwen-coder` | `qwen/qwen3-coder:free` | Free | Primary coding model |
+| `deepseek-flash-free` | `deepseek/deepseek-v4-flash:free` | Free | Long-context fallback |
+| `openrouter-free` | `openrouter/free` | Free | General fallback/router |
 | `nemotron-ultra` | `nvidia/nemotron-3-ultra-550b-a55b` | $0.001/$0.003 | Security audits |
-| `deepseek-flash` | `deepseek/deepseek-v4-flash` | $0.112/$0.224 | Fast coding |
 | `deepseek-pro` | `deepseek/deepseek-v4-pro` | $0.435/$0.87 | Complex reasoning |
 
 ## 5. Docker Integration
@@ -103,8 +103,9 @@ The overlay adds these to the MCP server:
 
 ```yaml
 OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-NEMOTRON_MODEL=${NEMOTRON_MODEL:-nvidia/nemotron-3-super-120b-a12b:free}
-DEEPSEEK_MODEL=${DEEPSEEK_MODEL:-deepseek/deepseek-v4-flash}
+CODING_MODEL=${CODING_MODEL:-openrouter/qwen/qwen3-coder:free}
+FALLBACK_MODEL=${FALLBACK_MODEL:-openrouter/deepseek/deepseek-v4-flash:free}
+ROUTER_MODEL=${ROUTER_MODEL:-openrouter/free}
 GH_PAT=${GH_PAT}
 OPENROUTER_SITE_URL=https://github.com/browneyes-sec/eyegents
 OPENROUTER_SITE_TITLE=eyegents

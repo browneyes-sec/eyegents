@@ -1,15 +1,33 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "Agent-to-model routing rules for OpenRouter integration",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "models": {
-    "nemotron-super": {
-      "openrouterId": "nvidia/nemotron-3-super-120b-a12b:free",
+    "qwen-coder": {
+      "openrouterId": "qwen/qwen3-coder:free",
       "contextWindow": 1048576,
       "maxOutput": 16384,
       "costPerMillionInput": 0,
       "costPerMillionOutput": 0,
-      "strengths": ["agent orchestration", "multi-step planning", "long context"],
+      "strengths": ["coding", "code generation", "refactoring", "agent orchestration"],
+      "tier": "free"
+    },
+    "deepseek-flash-free": {
+      "openrouterId": "deepseek/deepseek-v4-flash:free",
+      "contextWindow": 1048576,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0,
+      "costPerMillionOutput": 0,
+      "strengths": ["long context", "fast coding", "complex tasks"],
+      "tier": "free"
+    },
+    "openrouter-free": {
+      "openrouterId": "openrouter/free",
+      "contextWindow": 0,
+      "maxOutput": 0,
+      "costPerMillionInput": 0,
+      "costPerMillionOutput": 0,
+      "strengths": ["general fallback", "model routing"],
       "tier": "free"
     },
     "nemotron-ultra": {
@@ -19,24 +37,6 @@
       "costPerMillionInput": 0.001,
       "costPerMillionOutput": 0.003,
       "strengths": ["complex reasoning", "security audits", "architecture review"],
-      "tier": "paid"
-    },
-    "nemotron-nano": {
-      "openrouterId": "nvidia/nemotron-3-nano-30b-a3b:free",
-      "contextWindow": 262144,
-      "maxOutput": 16384,
-      "costPerMillionInput": 0,
-      "costPerMillionOutput": 0,
-      "strengths": ["lightweight tasks", "fast inference", "sub-agent work"],
-      "tier": "free"
-    },
-    "deepseek-flash": {
-      "openrouterId": "deepseek/deepseek-v4-flash",
-      "contextWindow": 1048576,
-      "maxOutput": 16384,
-      "costPerMillionInput": 0.112,
-      "costPerMillionOutput": 0.224,
-      "strengths": ["fast coding", "code generation", "test writing"],
       "tier": "paid"
     },
     "deepseek-pro": {
@@ -56,60 +56,68 @@
         "description": "Use local qwen2.5-coder:7b for simple orchestration tasks"
       },
       "complex": {
-        "model": "nemotron-super",
-        "description": "Escalate to Nemotron 3 Super for complex multi-step planning"
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder for complex multi-step planning and routing"
       },
       "complexityThreshold": 2048,
-      "complexKeywords": ["decompose", "plan", "architecture", "refactor", "multi-step", "break down", "coordinate"]
+      "complexKeywords": [
+        "decompose",
+        "plan",
+        "architecture",
+        "refactor",
+        "multi-step",
+        "break down",
+        "coordinate"
+      ]
     },
     "backend": {
       "primary": {
-        "model": "deepseek-flash",
-        "description": "DeepSeek V4 Flash for backend coding tasks"
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder for backend coding tasks"
       },
       "fallback": {
-        "model": "local",
-        "description": "Fall back to local qwen2.5-coder:7b"
+        "model": "deepseek-flash-free",
+        "description": "DeepSeek V4 Flash (free) as long-context fallback"
       }
     },
     "frontend": {
       "primary": {
-        "model": "local",
-        "description": "Local qwen2.5-coder:7b for frontend tasks"
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder for frontend tasks"
       },
       "fallback": {
-        "model": "nemotron-super",
-        "description": "Escalate to Nemotron 3 Super if needed"
+        "model": "deepseek-flash-free",
+        "description": "DeepSeek V4 Flash (free) as fallback"
       }
     },
     "qa": {
       "primary": {
-        "model": "deepseek-flash",
-        "description": "DeepSeek V4 Flash for test generation"
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder for test generation"
       },
       "fallback": {
-        "model": "local",
-        "description": "Fall back to local qwen2.5-coder:7b"
+        "model": "deepseek-flash-free",
+        "description": "DeepSeek V4 Flash (free) as fallback"
       }
     },
     "ops": {
       "primary": {
-        "model": "local",
-        "description": "Local qwen2.5-coder:7b for ops tasks"
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder for ops tasks"
       },
       "fallback": {
-        "model": "nemotron-super",
-        "description": "Escalate to Nemotron 3 Super if needed"
+        "model": "deepseek-flash-free",
+        "description": "DeepSeek V4 Flash (free) as fallback"
       }
     },
     "fullstack": {
       "primary": {
-        "model": "deepseek-flash",
-        "description": "DeepSeek V4 Flash for full-stack features"
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder for full-stack features"
       },
       "fallback": {
-        "model": "local",
-        "description": "Fall back to local qwen2.5-coder:7b"
+        "model": "deepseek-flash-free",
+        "description": "DeepSeek V4 Flash (free) as fallback"
       }
     },
     "certifier": {
@@ -124,12 +132,16 @@
     },
     "aider": {
       "primary": {
-        "model": "nemotron-super",
-        "description": "Nemotron 3 Super as default for Aider coding tasks"
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder as default for Aider coding tasks"
       },
       "fallback": {
-        "model": "deepseek-flash",
-        "description": "DeepSeek V4 Flash as paid fallback for Aider"
+        "model": "deepseek-flash-free",
+        "description": "DeepSeek V4 Flash (free) as long-context fallback for Aider"
+      },
+      "general": {
+        "model": "openrouter-free",
+        "description": "OpenRouter free routing as general fallback"
       }
     }
   },

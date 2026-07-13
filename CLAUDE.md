@@ -75,12 +75,12 @@
 
 ## OpenRouter Models
 | Model | ID | Context | Cost | Use Case |
-|-------|----|---------|------|----------|
-| Nemotron 3 Super (free) | `nvidia/nemotron-3-super:free` | 1M | $0 | Agent orchestration |
+|-------|----|---------|------|---------|
+| Qwen3 Coder (free) | `qwen/qwen3-coder:free` | 1M | $0 | **Primary coding model** |
+| DeepSeek V4 Flash (free) | `deepseek/deepseek-v4-flash:free` | 1M | $0 | Long-context fallback |
+| OpenRouter free | `openrouter/free` | varies | $0 | General fallback/router |
 | Nemotron 3 Ultra | `nvidia/nemotron-3-ultra-550b-a55b` | 1M | $0.001/$0.003 | Security audits |
-| DeepSeek V4 Flash | `deepseek/deepseek-v4-flash` | 1M | $0.112/$0.224 | Fast coding |
 | DeepSeek V4 Pro | `deepseek/deepseek-v4-pro` | 1M | $0.435/$0.87 | Complex reasoning |
-| Nemotron 3 Nano (free) | `nvidia/nemotron-3-nano-30b-a3b:free` | 256K | $0 | Weak model (edit decisions) |
 
 ## External Fallback Strategy
 | Scenario | Fallback |
