@@ -1,4 +1,4 @@
-.PHONY: init playwright-install
+.PHONY: init playwright-install resolve-magenta
 
 # One-button init: load env, check deps, launch Aider
 init:
@@ -8,3 +8,7 @@ init:
 # Install Playwright with Chromium dependencies
 playwright-install:
 	@bash scripts/install-playwright.sh
+
+# Resolve merge conflicts in magenta repository
+resolve-magenta:
+	@bash scripts/resolve-magenta-conflicts.sh
