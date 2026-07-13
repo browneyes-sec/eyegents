@@ -152,6 +152,16 @@
         "model": "qwen-coder",
         "description": "Qwen3 Coder (free) as economy fallback"
       }
+    },
+    "magenta": {
+      "primary": {
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder (free) for workflow engine orchestration"
+      },
+      "fallback": {
+        "model": "deepseek-flash-free",
+        "description": "DeepSeek V4 Flash free as economy fallback"
+      }
     }
   },
   "localModels": {

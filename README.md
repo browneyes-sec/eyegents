@@ -145,6 +145,10 @@ mcp:eyegents:shell_exec command="npm" args=["test"]
 mcp:eyegents:skill_execute skillName="testing-patterns" task="generate unit tests"
 ```
 
+## Workflow Engine (Magenta Integration)
+
+The platform now integrates with **Magenta**, an agentic AI workflow engine for SOAR delivery. The `feature/workflow-engine` branch provides autonomous detection collection, orchestration, and durable registry storage for enterprise cloud environments. See the [magenta](https://github.com/browneyes-sec/magenta) repository for details.
+
 ## Development
 
 ```bash
