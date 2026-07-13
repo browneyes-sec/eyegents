@@ -43,7 +43,7 @@ export const aiderTools = [
         },
         model: {
           type: "string",
-          description: "OpenRouter model override (default: qwen3-coder:free)",
+          description:             "OpenRouter model override (default: deepseek-v4-flash paid, credits required)",
         },
         sessionId: {
           type: "string",
@@ -187,9 +187,9 @@ function buildAiderCommand(params: z.infer<typeof executeSchema>): string {
   const parts: string[] = [
     "aider",
     "--model",
-    params.model || "openrouter/qwen/qwen3-coder:free",
+    params.model || "openrouter/deepseek/deepseek-v4-flash",
     "--weak-model",
-    "openrouter/qwen/qwen3-coder:free",
+    "openrouter/deepseek/deepseek-v4-flash",
     "--read",
     "CONVENTIONS.md",
     "--read",

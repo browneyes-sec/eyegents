@@ -6,8 +6,8 @@ import type { AiderAdapterConfig, AiderRequest, AiderResult, AiderStatus } from 
 const DEFAULT_CONFIG: AiderAdapterConfig = {
   venvPath: ".venvs/aider",
   repoRoot: process.cwd(),
-  defaultModel: "openrouter/qwen/qwen3-coder:free",
-  defaultWeakModel: "openrouter/qwen/qwen3-coder:free",
+  defaultModel: "openrouter/deepseek/deepseek-v4-flash",
+  defaultWeakModel: "openrouter/deepseek/deepseek-v4-flash",
   timeoutMs: 300_000,
 };
 

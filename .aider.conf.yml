@@ -1,11 +1,11 @@
 # eyegents/.aider.conf.yml
 # Aider configuration for eyegents monorepo
-# Primary model: Qwen3 Coder (free) via OpenRouter
-# Weak model: Qwen3 Coder (free) — same model for consistency
-# Long-context fallback: DeepSeek V4 Flash (free) via OpenRouter
+# Primary model: DeepSeek V4 Flash (paid, credits available) via OpenRouter
+# Weak model: DeepSeek V4 Flash — same model for consistency
+# Economy model: Qwen3 Coder (free, may rate-limit upstream)
 
-model: openrouter/qwen/qwen3-coder:free
-weak-model: openrouter/qwen/qwen3-coder:free
+model: openrouter/deepseek/deepseek-v4-flash
+weak-model: openrouter/deepseek/deepseek-v4-flash
 
 # Credential resolution (reads OPENROUTER_API_KEY from .env)
 env-file: .env

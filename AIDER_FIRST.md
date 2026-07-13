@@ -143,10 +143,13 @@ bge-m3:latest
 
 #### Remote Models (OpenRouter)
 ```bash
-# Free tier models (default for cost efficiency)
-qwen/qwen3-coder:free          # Primary coding model (1M context)
-deepseek/deepseek-v4-flash:free  # Long-context fallback (1M context)
-openrouter/free                # General fallback/router
+# Primary model (paid, credits on key — reliable)
+deepseek/deepseek-v4-flash       # DeepSeek V4 Flash (1M context, $0.11/M in)
+
+# Free tier models (economy fallback — may rate-limit upstream)
+qwen/qwen3-coder:free            # Qwen3 Coder (1M context, free)
+deepseek/deepseek-v4-flash:free  # DeepSeek V4 Flash free (1M context, free)
+openrouter/free                  # General fallback/router
 
 # Paid tier models for complex tasks
 nvidia/nemotron-3-ultra-550b-a55b  # Security, audits ($0.001/$0.003)

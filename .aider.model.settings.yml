@@ -2,6 +2,19 @@
 # Model behavior overrides for OpenRouter models used by Aider
 # HTTP-Referer + X-Title headers ensure requests are attributed to eyegents
 
+- name: openrouter/deepseek/deepseek-v4-flash
+  edit_format: diff
+  weak_model_name: openrouter/deepseek/deepseek-v4-flash
+  use_repo_map: true
+  send_undo_reply: false
+  examples_as_sys_msg: true
+  extra_params:
+    max_tokens: 8192
+    temperature: 0.2
+    extra_headers:
+      HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
+      X-Title: "eyegents"
+
 - name: openrouter/qwen/qwen3-coder:free
   edit_format: diff
   use_repo_map: true

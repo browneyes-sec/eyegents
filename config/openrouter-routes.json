@@ -12,13 +12,22 @@
       "strengths": ["coding", "code generation", "refactoring", "agent orchestration"],
       "tier": "free"
     },
+    "deepseek-flash": {
+      "openrouterId": "deepseek/deepseek-v4-flash",
+      "contextWindow": 1048576,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0.112,
+      "costPerMillionOutput": 0.224,
+      "strengths": ["reliable coding", "primary model", "production use"],
+      "tier": "paid"
+    },
     "deepseek-flash-free": {
       "openrouterId": "deepseek/deepseek-v4-flash:free",
       "contextWindow": 1048576,
       "maxOutput": 16384,
       "costPerMillionInput": 0,
       "costPerMillionOutput": 0,
-      "strengths": ["long context", "fast coding", "complex tasks"],
+      "strengths": ["long context", "economy fallback", "cost saving"],
       "tier": "free"
     },
     "openrouter-free": {
@@ -70,56 +79,6 @@
         "coordinate"
       ]
     },
-    "backend": {
-      "primary": {
-        "model": "qwen-coder",
-        "description": "Qwen3 Coder for backend coding tasks"
-      },
-      "fallback": {
-        "model": "deepseek-flash-free",
-        "description": "DeepSeek V4 Flash (free) as long-context fallback"
-      }
-    },
-    "frontend": {
-      "primary": {
-        "model": "qwen-coder",
-        "description": "Qwen3 Coder for frontend tasks"
-      },
-      "fallback": {
-        "model": "deepseek-flash-free",
-        "description": "DeepSeek V4 Flash (free) as fallback"
-      }
-    },
-    "qa": {
-      "primary": {
-        "model": "qwen-coder",
-        "description": "Qwen3 Coder for test generation"
-      },
-      "fallback": {
-        "model": "deepseek-flash-free",
-        "description": "DeepSeek V4 Flash (free) as fallback"
-      }
-    },
-    "ops": {
-      "primary": {
-        "model": "qwen-coder",
-        "description": "Qwen3 Coder for ops tasks"
-      },
-      "fallback": {
-        "model": "deepseek-flash-free",
-        "description": "DeepSeek V4 Flash (free) as fallback"
-      }
-    },
-    "fullstack": {
-      "primary": {
-        "model": "qwen-coder",
-        "description": "Qwen3 Coder for full-stack features"
-      },
-      "fallback": {
-        "model": "deepseek-flash-free",
-        "description": "DeepSeek V4 Flash (free) as fallback"
-      }
-    },
     "certifier": {
       "primary": {
         "model": "nemotron-ultra",
@@ -132,16 +91,66 @@
     },
     "aider": {
       "primary": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash (paid, credits available) — reliable primary coding model"
+      },
+      "economy": {
         "model": "qwen-coder",
-        "description": "Qwen3 Coder as default for Aider coding tasks"
+        "description": "Qwen3 Coder (free) — cost-saving fallback, may rate-limit upstream"
       },
       "fallback": {
-        "model": "deepseek-flash-free",
-        "description": "DeepSeek V4 Flash (free) as long-context fallback for Aider"
-      },
-      "general": {
         "model": "openrouter-free",
         "description": "OpenRouter free routing as general fallback"
+      }
+    },
+    "backend": {
+      "primary": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash (paid) for backend coding"
+      },
+      "fallback": {
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder (free) as economy fallback"
+      }
+    },
+    "frontend": {
+      "primary": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash (paid) for frontend coding"
+      },
+      "fallback": {
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder (free) as economy fallback"
+      }
+    },
+    "qa": {
+      "primary": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash (paid) for test generation"
+      },
+      "fallback": {
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder (free) as economy fallback"
+      }
+    },
+    "ops": {
+      "primary": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash (paid) for ops tasks"
+      },
+      "fallback": {
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder (free) as economy fallback"
+      }
+    },
+    "fullstack": {
+      "primary": {
+        "model": "deepseek-flash",
+        "description": "DeepSeek V4 Flash (paid) for full-stack features"
+      },
+      "fallback": {
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder (free) as economy fallback"
       }
     }
   },

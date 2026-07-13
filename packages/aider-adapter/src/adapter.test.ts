@@ -133,9 +133,9 @@ describe("AiderAdapter", () => {
     it("builds default args with just a task", () => {
       const args = (adapter as any).buildArgs({ task: "add a feature" });
       expect(args).toContain("--model");
-      expect(args).toContain("openrouter/qwen/qwen3-coder:free");
+      expect(args).toContain("openrouter/deepseek/deepseek-v4-flash");
       expect(args).toContain("--weak-model");
-      expect(args).toContain("openrouter/qwen/qwen3-coder:free");
+      expect(args).toContain("openrouter/deepseek/deepseek-v4-flash");
       expect(args).toContain("--read");
       expect(args).toContain("CONVENTIONS.md");
       expect(args).toContain("CLAUDE.md");
