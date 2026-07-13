@@ -25,8 +25,9 @@ Template file showing required secrets without actual values:
 ```
 OPENROUTER_API_KEY=your_key_here
 GH_PAT=your_github_pat_here
-NEMOTRON_MODEL=nvidia/nemotron-3-super:free
-DEEPSEEK_MODEL=deepseek/deepseek-v4-flash
+CODING_MODEL=openrouter/qwen/qwen3-coder:free
+FALLBACK_MODEL=openrouter/deepseek/deepseek-v4-flash:free
+ROUTER_MODEL=openrouter/free
 ```
 
 ## CI/CD (GitHub Actions)
@@ -38,8 +39,9 @@ Store these in repository settings (Settings → Secrets and variables → Actio
 |--------|-------------|-------|
 | `OPENROUTER_API_KEY` | OpenRouter API authentication | LLM routing |
 | `GH_PAT` | GitHub Personal Access Token | API operations |
-| `NEMOTRON_MODEL` | Nemotron model identifier | Agent routing |
-| `DEEPSEEK_MODEL` | DeepSeek model identifier | Agent routing |
+| `CODING_MODEL` | Primary coding model identifier | Agent routing (default: qwen3-coder:free) |
+| `FALLBACK_MODEL` | Long-context fallback model | Agent routing (default: deepseek-v4-flash:free) |
+| `ROUTER_MODEL` | General fallback router | Agent routing (default: openrouter/free) |
 
 ### Naming Convention
 - Use `GH_PAT` (not `GITHUB_PAT`) due to GitHub reserved variable restrictions
@@ -78,8 +80,9 @@ OPENROUTER_API_KEY=sk-or-...
 OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
 
 # Models
-NEMOTRON_MODEL=nvidia/nemotron-3-super:free
-DEEPSEEK_MODEL=deepseek/deepseek-v4-flash
+CODING_MODEL=openrouter/qwen/qwen3-coder:free
+FALLBACK_MODEL=openrouter/deepseek/deepseek-v4-flash:free
+ROUTER_MODEL=openrouter/free
 
 # Qdrant
 QDRANT_API_KEY=your_qdrant_key
@@ -155,9 +158,9 @@ git diff --cached | grep -i "key\|secret\|password\|token"
 - **Scope**: Read-only, rate-limited
 
 ### Models
-- **Names**: `NEMOTRON_MODEL`, `DEEPSEEK_MODEL`
+- **Names**: `CODING_MODEL`, `FALLBACK_MODEL`, `ROUTER_MODEL`
 - **Format**: Provider/model:variant
-- **Example**: `nvidia/nemotron-3-super:free`
+- **Example**: `openrouter/qwen/qwen3-coder:free`
 
 ## Emergency Response
 

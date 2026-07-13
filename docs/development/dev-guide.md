@@ -433,9 +433,9 @@ deactivate
 
 **Solution**:
 ```bash
-# Use the paid model instead
+# Use the fallback model
 OPENROUTER_API_KEY=sk-or-v1-your-key aider \
-  --model openrouter/deepseek/deepseek-v4-flash \
+  --model openrouter/deepseek/deepseek-v4-flash:free \
   --message "Your task"
 ```
 

@@ -44,7 +44,7 @@ export const aiderTools = [
         model: {
           type: "string",
           description:
-            "OpenRouter model override (default: nemotron-3-super:free)",
+            "OpenRouter model override (default: qwen3-coder:free)",
         },
         sessionId: {
           type: "string",
@@ -189,9 +189,9 @@ function buildAiderCommand(params: z.infer<typeof executeSchema>): string {
   const parts: string[] = [
     "aider",
     "--model",
-    params.model || "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
+    params.model || "openrouter/qwen/qwen3-coder:free",
     "--weak-model",
-    "openrouter/nvidia/nemotron-3-nano-30b-a3b:free",
+    "openrouter/qwen/qwen3-coder:free",
     "--read",
     "CONVENTIONS.md",
     "--read",

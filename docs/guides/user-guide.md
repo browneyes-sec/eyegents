@@ -73,25 +73,25 @@ OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY .secrets | cut -d= -f2) aider \
 
 # Use a different model if you hit rate limits
 OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY .secrets | cut -d= -f2) aider \
-  --model openrouter/deepseek/deepseek-v4-flash \
+  --model openrouter/deepseek/deepseek-v4-flash:free \
   --message "Add error handling to the API service" \
   src/service.ts
 ```
 
 #### C. Different Model Selections
 
-- **Free model** (Nemotron 3 Super): Primary, rate-limited
-- **Paid fallback** (DeepSeek V4 Flash): Works when free model limit hit
-- **Weak model** (Nemotron 3 Nano): Always used for edit decisions
+- **Primary** (Qwen3 Coder): Default coding model, free, 1M context
+- **Long-context fallback** (DeepSeek V4 Flash): Free, same 1M context
+- **General router** (OpenRouter free): Routes to cheapest available free model
 
 ```bash
-# Force Nemotron 3 Super (free)
+# Force Qwen3 Coder (default)
 OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY .secrets | cut -d= -f2) aider \
-  --model openrouter/nvidia/nemotron-3-super-120b-a12b:free
+  --model openrouter/qwen/qwen3-coder:free
 
-# Force DeepSeek V4 Flash (paid)
+# Force DeepSeek V4 Flash (long-context fallback)
 OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY .secrets | cut -d= -f2) aider \
-  --model openrouter/deepseek/deepseek-v4-flash
+  --model openrouter/deepseek/deepseek-v4-flash:free
 ```
 
 #### D. Docker Services (Full Environment)
@@ -136,9 +136,9 @@ docker exec mcp-server aider --yes --message "Your task"
 #### "Rate Limit Exceeded"
 
 ```bash
-# Use the paid model instead
+# Use the long-context fallback model
 OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY .secrets | cut -d= -f2) aider \
-  --model openrouter/deepseek/deepseek-v4-flash \
+  --model openrouter/deepseek/deepseek-v4-flash:free \
   --message "Your task"
 ```
 
@@ -175,7 +175,7 @@ OPENROUTER_API_KEY=sk-or-v1-your-key-here
 |------|---------|-------------|
 | Start coding | `OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY .secrets | cut -d= -f2) aider` | Interactive coding session |
 | Quick edit | `OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY .secrets | cut -d= -f2) aider --yes --message "task" file.ts` | Edit file automatically |
-| Use specific model | `OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY .secrets | cut -d= -f2) aider --model openrouter/deepseek/deepseek-v4-flash` | Force paid fallback model |
+| Use specific model | `OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY .secrets | cut -d= -f2) aider --model openrouter/qwen/qwen3-coder:free` | Force specific coding model |
 | Interactive in project | `cd packages/aider-adapter && OPENROUTER_API_KEY=$(grep ^OPENROUTER_API_KEY ../.secrets | cut -d= -f2) aider` | Start in specific subdirectory |
 | Quick bootstrap | `./scripts/bootstrap.sh --quick` | Just check prerequisites |
 | Full setup | `./scripts/bootstrap.sh --full` | Docker + build + all services |

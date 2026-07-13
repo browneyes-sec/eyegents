@@ -11,8 +11,8 @@ import {
 const DEFAULT_CONFIG: AiderAdapterConfig = {
   venvPath: ".venvs/aider",
   repoRoot: process.cwd(),
-  defaultModel: "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
-  defaultWeakModel: "openrouter/nvidia/nemotron-3-nano-30b-a3b:free",
+  defaultModel: "openrouter/qwen/qwen3-coder:free",
+  defaultWeakModel: "openrouter/qwen/qwen3-coder:free",
   timeoutMs: 300_000,
 };
 

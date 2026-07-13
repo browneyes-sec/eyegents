@@ -91,9 +91,9 @@ interface AgentMessage {
 **Integration Pattern**:
 ```typescript
 const config = {
-  primary: "nemotron-3-super:free",
-  fallback: "deepseek-v4-flash",
-  weakModel: "nemotron-3-nano:free"
+  primary: "qwen3-coder:free",
+  fallback: "deepseek-v4-flash:free",
+  router: "openrouter/free"
 }
 ```
 
@@ -197,9 +197,9 @@ User Request → Orchestrator → Aider Agent
 // config/openrouter-routes.json
 {
   "eyegents": {
-    "primary": "openrouter/nvidia/nemotron-3-super-120b-a12b:free",
-    "fallback": "openrouter/deepseek/deepseek-v4-flash",
-    "weak": "openrouter/nvidia/nemotron-3-nano-30b-a3b:free"
+    "primary": "openrouter/qwen/qwen3-coder:free",
+    "fallback": "openrouter/deepseek/deepseek-v4-flash:free",
+    "router": "openrouter/free"
   },
   "monitoring": {
     "maxTokens": 8192,

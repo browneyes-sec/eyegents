@@ -128,9 +128,9 @@ describe("AiderAdapter", () => {
     it("builds default args with just a task", () => {
       const args = (adapter as any).buildArgs({ task: "add a feature" });
       expect(args).toContain("--model");
-      expect(args).toContain("openrouter/nvidia/nemotron-3-super-120b-a12b:free");
+      expect(args).toContain("openrouter/qwen/qwen3-coder:free");
       expect(args).toContain("--weak-model");
-      expect(args).toContain("openrouter/nvidia/nemotron-3-nano-30b-a3b:free");
+      expect(args).toContain("openrouter/qwen/qwen3-coder:free");
       expect(args).toContain("--read");
       expect(args).toContain("CONVENTIONS.md");
       expect(args).toContain("CLAUDE.md");
@@ -181,10 +181,10 @@ describe("AiderAdapter", () => {
     it("uses custom model when specified", () => {
       const args = (adapter as any).buildArgs({
         task: "test",
-        model: "deepseek/deepseek-v4-flash",
+        model: "openrouter/deepseek/deepseek-v4-flash:free",
       });
-      expect(args).toContain("deepseek/deepseek-v4-flash");
-      expect(args).not.toContain("nemotron-3-super");
+      expect(args).toContain("openrouter/deepseek/deepseek-v4-flash:free");
+      expect(args).not.toContain("qwen3-coder");
     });
   });
 
