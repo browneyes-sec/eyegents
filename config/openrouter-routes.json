@@ -60,7 +60,15 @@
         "description": "Qwen3 Coder for complex multi-step planning and routing"
       },
       "complexityThreshold": 2048,
-      "complexKeywords": ["decompose", "plan", "architecture", "refactor", "multi-step", "break down", "coordinate"]
+      "complexKeywords": [
+        "decompose",
+        "plan",
+        "architecture",
+        "refactor",
+        "multi-step",
+        "break down",
+        "coordinate"
+      ]
     },
     "backend": {
       "primary": {

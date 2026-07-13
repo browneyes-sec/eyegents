@@ -48,9 +48,9 @@ Layer 3: bin/eyegents family of entry points
 
 ### Model Routing
 
-- **Primary**: openrouter/nvidia/nemotron-3-super-120b-a12b:free (1M token, $0)
-- **Paid Fallback**: openrouter/deepseek/deepseek-v4-flash (1M token, $0.11/1M in)
-- **Weak Model**: openrouter/nvidia/nemotron-3-nano-30b-a3b:free (256K tokens, $0)
+- **Primary**: openrouter/qwen/qwen3-coder:free (1M token, $0) — Qwen3 Coder
+- **Long-Context Fallback**: openrouter/deepseek/deepseek-v4-flash:free (1M token, $0)
+- **General Router**: openrouter/free — routes to cheapest available free model
 
 ### Runtime Modes
 
@@ -76,7 +76,7 @@ Layer 3: bin/eyegents family of entry points
 
 **AgentRoleSchema**: Added `"aider"` as an eighth role:
 ```json
-{"role": "aider", "type": "coding", "models": ["nemotron-3-super", "deepseek-flash"]}
+{"role": "aider", "type": "coding", "models": ["qwen3-coder", "deepseek-flash-free"]}
 ```
 
 **Orchestrator.routing_rules**: routes code edits, refactoring, implementation tasks to `AiderAdapter`.

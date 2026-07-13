@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AiderAdapter } from "./adapter.js";
 
 // ---------------------------------------------------------------------------
@@ -20,8 +20,8 @@ vi.mock("node:fs", () => ({
 // Helpers
 // ---------------------------------------------------------------------------
 
-import { spawn, execSync } from "node:child_process";
-import { existsSync, accessSync } from "node:fs";
+import { execSync, spawn } from "node:child_process";
+import { accessSync, existsSync } from "node:fs";
 
 function mockExecSyncOnce(result: string, shouldThrow = false) {
   if (shouldThrow) {
@@ -33,22 +33,23 @@ function mockExecSyncOnce(result: string, shouldThrow = false) {
   vi.mocked(execSync).mockReturnValueOnce(result);
 }
 
-function mockSpawnOnce(
-  stdout: string,
-  stderr: string,
-  exitCode: number,
-  diff?: string,
-) {
+function mockSpawnOnce(stdout: string, stderr: string, exitCode: number, diff?: string) {
   const child = {
-    stdout: { on: vi.fn((_event: string, cb: (d: Buffer) => void) => cb(Buffer.from(stdout))) },
-    stderr: { on: vi.fn((_event: string, cb: (d: Buffer) => void) => cb(Buffer.from(stderr))) },
+    stdout: {
+      on: vi.fn((_event: string, cb: (d: Buffer) => void) => cb(Buffer.from(stdout))),
+    },
+    stderr: {
+      on: vi.fn((_event: string, cb: (d: Buffer) => void) => cb(Buffer.from(stderr))),
+    },
     on: vi.fn((event: string, cb: (code?: number) => void) => {
       if (event === "close") {
         // Simulate diff capture via execSync after close
         if (diff !== undefined) {
           vi.mocked(execSync).mockReturnValueOnce(diff);
         } else {
-          vi.mocked(execSync).mockImplementationOnce(() => { throw new Error("no diff"); });
+          vi.mocked(execSync).mockImplementationOnce(() => {
+            throw new Error("no diff");
+          });
         }
         cb(exitCode);
       }
@@ -95,7 +96,7 @@ describe("AiderAdapter", () => {
       // Second candidate: .venvs/aider/bin/aider
       vi.mocked(existsSync).mockReturnValueOnce(false); // .venvs/aider/bin/aider doesn't exist
       vi.mocked(existsSync).mockReturnValueOnce(false); // .venvs/aider/bin/python3 doesn't exist
-      vi.mocked(existsSync).mockReturnValueOnce(true);  // ~/.local/bin/aider exists
+      vi.mocked(existsSync).mockReturnValueOnce(true); // ~/.local/bin/aider exists
       vi.mocked(accessSync).mockImplementationOnce(() => undefined); // and is executable
       const result = (adapter as any).resolveAiderBinary();
       expect(result).toContain(".local/bin/aider");
@@ -103,9 +104,13 @@ describe("AiderAdapter", () => {
 
     it("falls back to 'aider' when nothing is found", () => {
       // All candidates fail
-      vi.mocked(execSync).mockImplementation(() => { throw new Error("not found"); });
+      vi.mocked(execSync).mockImplementation(() => {
+        throw new Error("not found");
+      });
       vi.mocked(existsSync).mockReturnValue(false);
-      vi.mocked(accessSync).mockImplementation(() => { throw new Error("not executable"); });
+      vi.mocked(accessSync).mockImplementation(() => {
+        throw new Error("not executable");
+      });
       const result = (adapter as any).resolveAiderBinary();
       expect(result).toBe("aider");
     });
@@ -301,7 +306,9 @@ index a..b 100644
         throw new Error("command not found");
       });
       vi.mocked(existsSync).mockReturnValue(false);
-      vi.mocked(accessSync).mockImplementation(() => { throw new Error("not accessible"); });
+      vi.mocked(accessSync).mockImplementation(() => {
+        throw new Error("not accessible");
+      });
       const status = await adapter.checkAvailability();
       expect(status.available).toBe(false);
       expect(status.error).toContain("Aider binary not found");
@@ -318,7 +325,9 @@ index a..b 100644
         throw new Error("not found");
       });
       vi.mocked(existsSync).mockReturnValue(false);
-      vi.mocked(accessSync).mockImplementation(() => { throw new Error("not accessible"); });
+      vi.mocked(accessSync).mockImplementation(() => {
+        throw new Error("not accessible");
+      });
       const result = await adapter.execute({ task: "do something" });
       expect(result.success).toBe(false);
       expect(result.error).toContain("Aider binary not found");
@@ -331,7 +340,8 @@ index a..b 100644
       mockExecSyncOnce("aider 0.86.2\n");
 
       // spawn: provide stdout, stderr, exitCode, and diff
-      const diffContent = `diff --git a/src/main.ts b/src/main.ts\nindex a..b 100644\n--- a/src/main.ts\n+++ b/src/main.ts\n@@ -1 +1 @@\n-old\n+new\n`;
+      const diffContent =
+        "diff --git a/src/main.ts b/src/main.ts\nindex a..b 100644\n--- a/src/main.ts\n+++ b/src/main.ts\n@@ -1 +1 @@\n-old\n+new\n";
       mockSpawnOnce(
         "Applied edit to src/main.ts\nSummary: Updated the main file\n",
         "",
@@ -346,20 +356,15 @@ index a..b 100644
       expect(result.summary).toBe("Updated the main file");
       expect(result.exitCode).toBe(0);
       expect(result.tokenEstimate).toBeDefined();
-      expect(result.tokenEstimate!.input).toBeGreaterThan(0);
-      expect(result.tokenEstimate!.output).toBeGreaterThan(0);
+      expect(result.tokenEstimate?.input).toBeGreaterThan(0);
+      expect(result.tokenEstimate?.output).toBeGreaterThan(0);
     });
 
     it("handles non-zero exit code as failure", async () => {
       mockExecSyncOnce("/usr/bin/aider");
       mockExecSyncOnce("aider 0.86.2\n");
 
-      mockSpawnOnce(
-        "",
-        "Something went wrong",
-        1,
-        undefined,
-      );
+      mockSpawnOnce("", "Something went wrong", 1, undefined);
 
       const result = await adapter.execute({ task: "risky change" });
       expect(result.success).toBe(false);

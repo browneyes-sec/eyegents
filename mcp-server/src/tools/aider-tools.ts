@@ -1,6 +1,6 @@
-import { z } from "zod";
 import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import { z } from "zod";
 
 /**
  * MCP tools for executing Aider coding tasks.
@@ -43,8 +43,7 @@ export const aiderTools = [
         },
         model: {
           type: "string",
-          description:
-            "OpenRouter model override (default: qwen3-coder:free)",
+          description: "OpenRouter model override (default: qwen3-coder:free)",
         },
         sessionId: {
           type: "string",
@@ -121,8 +120,7 @@ export const aiderTools = [
   },
   {
     name: "aider_check",
-    description:
-      "Check if Aider is available in the MCP container environment",
+    description: "Check if Aider is available in the MCP container environment",
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -138,10 +136,10 @@ export const aiderTools = [
           }).trim();
         } catch {
           try {
-            version = execSync(
-              "python3 -m aider --version 2>/dev/null || echo 'unknown'",
-              { encoding: "utf-8", timeout: 10_000 },
-            ).trim();
+            version = execSync("python3 -m aider --version 2>/dev/null || echo 'unknown'", {
+              encoding: "utf-8",
+              timeout: 10_000,
+            }).trim();
           } catch {
             version = "unknown";
           }
