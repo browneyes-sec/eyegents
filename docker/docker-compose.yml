@@ -66,6 +66,10 @@ services:
     container_name: eyegents-mcp
     restart: unless-stopped
     ports: ["3001:3001"]
+    volumes:
+      # Mount host repo to WORKDIR (/app) so aider_execute MCP tool
+      # can run git diff against real source files.
+      - ..:/app:rw
     environment:
       - QDRANT_URL=http://qdrant:6333
       - OLLAMA_URL=http://ollama:11434

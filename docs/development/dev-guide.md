@@ -246,6 +246,169 @@ co-author: pabl0wsl <pabl0wsl@gmail.com>
 - Integration tests for MCP tools
 - E2E tests for Aider execution
 
+## Context Engineering
+
+Context engineering is how eyegents assembles and feeds relevant project context to AI agents (Aider, Orchestrator, etc.). It follows a **three-layer model**:
+
+### Layer 1: Static Context (Files)
+
+Files that are always loaded into every Aider session:
+
+| File | Purpose | Loaded via |
+|------|---------|-----------|
+| `CONVENTIONS.md` | Project-wide coding conventions, style, patterns | `--read CONVENTIONS.md` |
+| `CLAUDE.md` | Agent instructions, architecture, key decisions | `--read CLAUDE.md` |
+| `.aider.conf.yml` | Aider configuration (model, git settings) | Auto-loaded by Aider |
+| `.aiderignore` | Files to exclude from repo-map | `--aiderignore .aiderignore` |
+
+These files are *prompt-cached* — the LLM reads them once and keeps them in context window for the entire session.
+
+### Layer 2: Dynamic Context (Repo-Map + Vector Search)
+
+Aider automatically builds a **repo-map** (condensed tree of your codebase) and includes it in every request. Configuration:
+
+```yaml
+# .aider.conf.yml
+map-tokens: 4096        # Max tokens for repo-map (default: 2k)
+map-refresh: files      # Refresh strategy: files | auto | always
+```
+
+Beyond Aider's built-in repo-map, eyegents provides **semantic vector search** via Qdrant:
+
+```typescript
+// packages/qdrant-client — search code_chunks collection
+const results = await qdrant.search("code_chunks", {
+  query: "authentication middleware",
+  limit: 5,
+  filter: { language: "typescript" },
+});
+```
+
+Vector search is used by the Orchestrator **before** dispatching to Aider, to pull in relevant code snippets and prior patterns.
+
+### Layer 3: Learned Context (Qdrant Decisions)
+
+Every architectural decision made during an Aider session is stored in the `decisions` collection:
+
+```typescript
+await qdrant.upsert("decisions", {
+  id: uuid(),
+  vector: embed(decisionText),
+  payload: {
+    context: "Why we chose adapter pattern over direct exec",
+    rationale: "Three-layer architecture enables Docker isolation",
+    outcome: "AiderAdapter with spawn/exec fallback",
+    tags: ["architecture", "aider", "adapter"],
+    author: "aider",
+    timestamp: Date.now(),
+  },
+});
+```
+
+On subsequent sessions, the Orchestrator queries the `decisions` collection to retrieve relevant prior decisions — creating a **feedback loop** where past context informs future work.
+
+### Context Assembly Flow
+
+```
+User Request
+    │
+    ▼
+┌──────────────────────────────────────────┐
+│ Orchestrator Context Assembly             │
+│                                          │
+│ 1. Vector Search → relevant code chunks  │  ← Qdrant code_chunks
+│ 2. Decision Search → prior decisions      │  ← Qdrant decisions
+│ 3. Load static files → CONVENTIONS, CLAUDE│  ← Filesystem
+│ 4. Build context packet                   │
+│ 5. Append to Aider request                │
+└──────────────────────────────────────────┘
+    │
+    ▼
+┌──────────────────────────────────────────┐
+│ Aider Execution                          │
+│                                          │
+│ 1. Receive context packet + task          │
+│ 2. Apply repo-map to understand codebase  │
+│ 3. Generate edits                         │
+│ 4. Capture git diff                       │
+│ 5. Return structured result               │
+└──────────────────────────────────────────┘
+    │
+    ▼
+┌──────────────────────────────────────────┐
+│ Post-Execution (Feedback Loop)            │
+│                                          │
+│ 1. Store decision → Qdrant decisions      │
+│ 2. Index changed files → Qdrant code_chunks│
+│ 3. Update conversation memory              │
+│ 4. Return summary to user                 │
+└──────────────────────────────────────────┘
+```
+
+## Loop Engineering
+
+Loop engineering is the practice of designing **feedback cycles** that improve future AI interactions based on past outcomes.
+
+### The Four Feedback Loops
+
+| Loop | Trigger | Storage | Effect |
+|------|---------|---------|--------|
+| **Decision Memory** | After every successful edit | Qdrant `decisions` | Next session retrieves relevant decisions |
+| **Code Re-indexing** | After file changes | Qdrant `code_chunks` | Vector search returns updated code |
+| **Conversation History** | After every exchange | Qdrant `conversations` | Session continuity across turns |
+| **Skill Pattern Learning** | When a pattern is reused | Qdrant `skill_patterns` | Few-shot examples grow over time |
+
+### Decision Memory Loop (Most Important)
+
+This is the core loop that makes eyegents "smarter" over time:
+
+```
+1. Aider makes a change → git diff captured
+2. Adapter parses diff → identifies changed files
+3. Orchestrator extracts decision context:
+   - What was the task?
+   - What was changed?
+   - Why that approach?
+4. Decision stored in Qdrant with embedding
+5. NEXT SESSION: Similar task triggers vector search
+6. Relevant decision injected into Aider's context
+7. Aider makes better-informed decisions
+```
+
+### Implementing a New Loop
+
+To add a new feedback loop:
+
+1. **Identify the trigger** (e.g., "test failure detected")
+2. **Define the data** to store (e.g., `{ testName, error, fix }`)
+3. **Choose the Qdrant collection** (or create a new one)
+4. **Store on trigger** in the adapter's post-execution phase
+5. **Retrieve on relevant input** during context assembly
+
+Example — adding a "test failure recovery" loop:
+
+```typescript
+// In orchestrator's context assembly
+const failures = await qdrant.search("test_failures", {
+  query: request.task,
+  limit: 3,
+  filter: { project: repoName },
+});
+
+// Inject into Aider's read-only context
+request.files = [
+  ...request.files,
+  ...failures.map(f => f.payload.relevantFile),
+];
+```
+
+### Loop Anti-Patterns
+
+- **Stale context**: Storing decisions but never pruning old/irrelevant ones. Fix: add TTL or relevance threshold.
+- **Context overload**: Retrieving too many decisions and overflowing the context window. Fix: strict `limit` and `scoreThreshold`.
+- **Echo chamber**: Only retrieving decisions that confirm the current approach. Fix: diversify vector search with `offset` or diversity penalty.
+- **Missing loop closure**: Storing data but never retrieving it. Fix: every `upsert` should have a corresponding `search` use case.
+
 ## Common Issues and Solutions
 
 ### 1. Aider not found error
