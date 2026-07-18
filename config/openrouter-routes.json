@@ -177,5 +177,9 @@
     "primary": "qwen2.5-coder:7b",
     "small": "qwen2.5:0.5b",
     "embedding": "bge-m3:latest"
+  },
+  "freeProvider": {
+    "baseURL": "https://openrouter.ai/api/v1",
+    "models": ["qwen/qwen3-coder:free"]
   }
 }

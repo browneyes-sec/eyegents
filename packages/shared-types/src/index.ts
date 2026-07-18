@@ -192,3 +192,5 @@ export const HealthStatusSchema = z.object({
   failureCount: z.number()
 });
 export type HealthStatus = z.infer<typeof HealthStatusSchema>;
+
+export const FREE_MODEL = "qwen/qwen3-coder:free";

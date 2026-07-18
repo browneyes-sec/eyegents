@@ -1,6 +1,7 @@
 import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { z } from "zod";
+import { FREE_MODEL } from "@eyegents/shared-types";
 
 /**
  * MCP tools for executing Aider coding tasks.
@@ -43,7 +44,7 @@ export const aiderTools = [
         },
         model: {
           type: "string",
-          description:             "OpenRouter model override (default: qwen3-coder free, no rate limit)",
+          description:             `OpenRouter model override (default: ${FREE_MODEL}, no rate limit)`,
         },
         sessionId: {
           type: "string",
@@ -187,9 +188,9 @@ function buildAiderCommand(params: z.infer<typeof executeSchema>): string {
   const parts: string[] = [
     "aider",
     "--model",
-    params.model || "openrouter/qwen/qwen3-coder:free",
+    params.model || `openrouter/${FREE_MODEL}`,
     "--weak-model",
-    "openrouter/qwen/qwen3-coder:free",
+    `openrouter/${FREE_MODEL}`,
     "--read",
     "CONVENTIONS.md",
     "--read",

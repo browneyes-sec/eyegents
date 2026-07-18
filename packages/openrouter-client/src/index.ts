@@ -7,6 +7,7 @@ import type {
   EmbeddingResponse,
   HealthStatus,
 } from "./types.js";
+import { FREE_MODEL } from "@eyegents/shared-types";
 
 export type {
   CompletionRequest,
@@ -294,3 +295,8 @@ export class OpenRouterClient {
 }
 
 export const openrouterClient = new OpenRouterClient();
+
+export const freeClient = new OpenRouterClient({
+  apiKey: undefined,
+  dailyBudget: 0,
+});
