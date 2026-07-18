@@ -165,7 +165,7 @@ export class OpenRouterClient {
         );
         // Override with free model if needed
         if (useFreeModel) {
-          modelToUse = "qwen/qwen3-coder:free";
+          modelToUse = FREE_MODEL;
         } else {
           modelToUse = resolution.openrouterId || request.model;
         }

@@ -1,4 +1,5 @@
 import type { AgentRoutingConfig, RoutesConfig } from "./types.js";
+import { FREE_MODEL } from "@eyegents/shared-types";
 
 const DEFAULT_CONFIG: RoutesConfig = {
 	models: {
@@ -202,7 +203,8 @@ export class AgentRouter {
 			);
 		}
 
-		return this.getDefault();
+		// If no route found, fallback to free model
+		return this.resolve(FREE_MODEL, `free fallback for ${agentRole}`);
 	}
 
 	private resolve(

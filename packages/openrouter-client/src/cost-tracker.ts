@@ -74,6 +74,28 @@ export class CostTracker {
 		return entry;
 	}
 
+	recordFree(
+		model: string,
+		provider: string,
+		inputTokens: number,
+		outputTokens: number,
+		agentRole?: string,
+	): CostEntry {
+		const cost = 0; // Free model has no cost
+		const entry: CostEntry = {
+			model,
+			provider,
+			inputTokens,
+			outputTokens,
+			cost,
+			timestamp: new Date().toISOString(),
+			agentRole,
+		};
+		this.entries.push(entry);
+		this.sessionTotal += cost;
+		return entry;
+	}
+
 	canAfford(estimatedTokens: number): boolean {
 		const estimatedCost = (estimatedTokens * 0.5) / 1_000_000;
 		return this.sessionTotal + estimatedCost <= this.dailyBudget;
