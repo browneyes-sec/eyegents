@@ -1,6 +1,6 @@
 ---
 name: frontend
-model: ollama/qwen2.5-coder:1.5b
+model: ollama/qwen2.5-coder:7b
 description: |
   Frontend specialist: React/Vue components, state management, styling, accessibility.
 tools:

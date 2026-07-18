@@ -11,6 +11,7 @@ const DEFAULT_CONFIG: RoutesConfig = {
 			costPerMillionOutput: 0,
 			strengths: ["agent orchestration", "multi-step planning", "long context"],
 			tier: "free",
+			noLimit: false,
 		},
 		"nemotron-ultra": {
 			openrouterId: "nvidia/nemotron-3-ultra-550b-a55b",
@@ -24,6 +25,7 @@ const DEFAULT_CONFIG: RoutesConfig = {
 				"architecture review",
 			],
 			tier: "paid",
+			noLimit: false,
 		},
 		"nemotron-nano": {
 			openrouterId: "nvidia/nemotron-3-nano-30b-a3b:free",
@@ -33,6 +35,7 @@ const DEFAULT_CONFIG: RoutesConfig = {
 			costPerMillionOutput: 0,
 			strengths: ["lightweight tasks", "fast inference", "sub-agent work"],
 			tier: "free",
+			noLimit: false,
 		},
 		"deepseek-flash": {
 			openrouterId: "deepseek/deepseek-v4-flash",
@@ -42,6 +45,7 @@ const DEFAULT_CONFIG: RoutesConfig = {
 			costPerMillionOutput: 0.224,
 			strengths: ["fast coding", "code generation", "test writing"],
 			tier: "paid",
+			noLimit: false,
 		},
 		"deepseek-pro": {
 			openrouterId: "deepseek/deepseek-v4-pro",
@@ -51,6 +55,37 @@ const DEFAULT_CONFIG: RoutesConfig = {
 			costPerMillionOutput: 0.87,
 			strengths: ["complex reasoning", "architecture", "deep analysis"],
 			tier: "paid",
+			noLimit: false,
+		},
+		"qwen-coder": {
+			openrouterId: "qwen/qwen3-coder:free",
+			contextWindow: 1048576,
+			maxOutput: 16384,
+			costPerMillionInput: 0,
+			costPerMillionOutput: 0,
+			strengths: ["coding", "code generation", "refactoring", "no rate limit"],
+			tier: "free",
+			noLimit: true,
+		},
+		"deepseek-flash-free": {
+			openrouterId: "deepseek/deepseek-v4-flash:free",
+			contextWindow: 1048576,
+			maxOutput: 16384,
+			costPerMillionInput: 0,
+			costPerMillionOutput: 0,
+			strengths: ["long context", "economy fallback", "cost saving"],
+			tier: "free",
+			noLimit: true,
+		},
+		"openrouter-free": {
+			openrouterId: "openrouter/free",
+			contextWindow: 0,
+			maxOutput: 0,
+			costPerMillionInput: 0,
+			costPerMillionOutput: 0,
+			strengths: ["general fallback", "model routing"],
+			tier: "free",
+			noLimit: true,
 		},
 	},
 	agentRoutes: {
@@ -88,8 +123,8 @@ const DEFAULT_CONFIG: RoutesConfig = {
 				description: "Local qwen2.5-coder:7b for frontend tasks",
 			},
 			fallback: {
-				model: "nemotron-super",
-				description: "Escalate to Nemotron 3 Super if needed",
+				model: "qwen-coder",
+				description: "Qwen3 Coder (free) for complex frontend work",
 			},
 		},
 		qa: {
@@ -98,8 +133,8 @@ const DEFAULT_CONFIG: RoutesConfig = {
 				description: "DeepSeek V4 Flash for test generation",
 			},
 			fallback: {
-				model: "local",
-				description: "Fall back to local qwen2.5-coder:7b",
+				model: "qwen-coder",
+				description: "Qwen3 Coder (free) as economy fallback",
 			},
 		},
 		ops: {
@@ -108,8 +143,8 @@ const DEFAULT_CONFIG: RoutesConfig = {
 				description: "Local qwen2.5-coder:7b for ops tasks",
 			},
 			fallback: {
-				model: "nemotron-super",
-				description: "Escalate to Nemotron 3 Super if needed",
+				model: "qwen-coder",
+				description: "Qwen3 Coder (free) for complex ops work",
 			},
 		},
 		fullstack: {
@@ -118,8 +153,8 @@ const DEFAULT_CONFIG: RoutesConfig = {
 				description: "DeepSeek V4 Flash for full-stack features",
 			},
 			fallback: {
-				model: "local",
-				description: "Fall back to local qwen2.5-coder:7b",
+				model: "qwen-coder",
+				description: "Qwen3 Coder (free) as economy fallback",
 			},
 		},
 		certifier: {
@@ -134,12 +169,12 @@ const DEFAULT_CONFIG: RoutesConfig = {
 		},
 		aider: {
 			primary: {
-				model: "nemotron-super",
-				description: "Nemotron 3 Super for Aider coding tasks",
+				model: "openrouter-free",
+				description: "openrouter/free — free routing endpoint for cost-effective coding",
 			},
 			fallback: {
-				model: "deepseek-flash",
-				description: "DeepSeek V4 Flash as paid fallback",
+				model: "qwen-coder",
+				description: "Qwen3 Coder (free) as reliable economy fallback",
 			},
 		},
 	},

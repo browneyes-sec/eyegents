@@ -100,16 +100,16 @@
     },
     "aider": {
       "primary": {
-        "model": "qwen-coder",
-        "description": "Qwen3 Coder (free) — no rate limit, primary coding model"
+        "model": "openrouter-free",
+        "description": "openrouter/free — free routing endpoint, cost-effective primary"
       },
       "economy": {
         "model": "qwen-coder",
-        "description": "Qwen3 Coder (free) — cost-saving fallback, no rate limit"
+        "description": "Qwen3 Coder (free) — no rate limit, reliable fallback"
       },
       "fallback": {
-        "model": "openrouter-free",
-        "description": "OpenRouter free routing as general fallback"
+        "model": "deepseek-flash-free",
+        "description": "DeepSeek V4 Flash free — long context fallback"
       }
     },
     "backend": {
@@ -124,12 +124,12 @@
     },
     "frontend": {
       "primary": {
-        "model": "deepseek-flash",
-        "description": "DeepSeek V4 Flash (paid) for frontend coding"
+        "model": "local",
+        "description": "Local qwen2.5-coder:7b for frontend tasks — UI work stays local"
       },
       "fallback": {
         "model": "qwen-coder",
-        "description": "Qwen3 Coder (free) as economy fallback"
+        "description": "Qwen3 Coder (free) for complex frontend work"
       }
     },
     "qa": {
@@ -144,12 +144,12 @@
     },
     "ops": {
       "primary": {
-        "model": "deepseek-flash",
-        "description": "DeepSeek V4 Flash (paid) for ops tasks"
+        "model": "local",
+        "description": "Local qwen2.5-coder:7b for ops tasks — infra stays local"
       },
       "fallback": {
         "model": "qwen-coder",
-        "description": "Qwen3 Coder (free) as economy fallback"
+        "description": "Qwen3 Coder (free) for complex ops work"
       }
     },
     "fullstack": {

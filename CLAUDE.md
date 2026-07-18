@@ -61,24 +61,47 @@
 - Alt embedding: `nomic-embed-text:latest` (768-dim, fast)
 - **Auto-upgrade**: Weekly GitHub Action checks Ollama library
 
+## Playwright on WSL (Ubuntu 26.04+)
+
+Playwright doesn't natively support Ubuntu 26.04. Fix:
+
+```bash
+# One-time setup:
+bash scripts/setup-playwright.sh
+
+# Or manually:
+~/.local/share/uv/tools/aider-chat/bin/python -m pip install --upgrade playwright
+~/.local/share/uv/tools/aider-chat/bin/python -m playwright install chromium-headless-shell
+
+# Download system libs (no sudo needed):
+cd /tmp && apt-get download libnspr4 libnss3 libasound2t64
+# Then extract .so files to ~/.local/lib/playwright-deps/
+
+# Set env vars (done automatically by eyegents alias):
+export PLAYWRIGHT_BROWSERS_PATH="${HOME}/.local/share/playwright-browsers"
+export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+export LD_LIBRARY_PATH="${HOME}/.local/lib/playwright-deps:${LD_LIBRARY_PATH:-}"
+```
+
 ## OpenRouter Agent Routing (Isolated Package)
 | Agent | Primary | Fallback | Notes |
 |-------|---------|----------|-------|
-| orchestrator | local qwen2.5-coder:7b | Nemotron 3 Super (free) | Hybrid: local for simple, remote for complex |
-| backend | DeepSeek V4 Flash | local qwen2.5-coder:7b | Fast coding tasks |
-| frontend | local qwen2.5-coder:7b | Nemotron 3 Super (free) | UI tasks stay local |
-| qa | DeepSeek V4 Flash | local qwen2.5-coder:7b | Fast test generation |
-| ops | local qwen2.5-coder:7b | Nemotron 3 Super (free) | Infra tasks stay local |
-| fullstack | DeepSeek V4 Flash | local qwen2.5-coder:7b | E2E features |
+| orchestrator | local qwen2.5-coder:7b | Qwen3 Coder (free) | Hybrid: local for simple, remote for complex |
+| backend | DeepSeek V4 Flash | Qwen3 Coder (free) | Fast coding tasks |
+| frontend | local qwen2.5-coder:7b | Qwen3 Coder (free) | UI tasks stay local |
+| qa | DeepSeek V4 Flash | Qwen3 Coder (free) | Fast test generation |
+| ops | local qwen2.5-coder:7b | Qwen3 Coder (free) | Infra tasks stay local |
+| fullstack | DeepSeek V4 Flash | Qwen3 Coder (free) | E2E features |
 | certifier | Nemotron 3 Ultra | DeepSeek V4 Pro | Deep reasoning for security |
-| aider | Nemotron 3 Super (free) | DeepSeek V4 Flash | AI pair-programming via Aider adapter |
+| aider | OpenRouter free (openrouter/free) | Qwen3 Coder (free) | AI pair-programming via Aider adapter |
 
 ## OpenRouter Models
 | Model | ID | Context | Cost | Use Case |
 |-------|----|---------|------|---------|
 | DeepSeek V4 Flash (paid) | `deepseek/deepseek-v4-flash` | 1M | $0.112/$0.224 | **Primary coding model** (credits on key) |
-| Qwen3 Coder (free) | `qwen/qwen3-coder:free` | 1M | $0 | Economy fallback (may rate-limit upstream) |
-| OpenRouter free | `openrouter/free` | varies | $0 | General fallback/router |
+| Qwen3 Coder (free) | `qwen/qwen3-coder:free` | 1M | $0 | Economy fallback, no rate limit |
+| DeepSeek V4 Flash (free) | `deepseek/deepseek-v4-flash:free` | 1M | $0 | Long-context free fallback |
+| OpenRouter free | `openrouter/free` | varies | $0 | **Aider primary** — routes to cheapest free model |
 | Nemotron 3 Ultra | `nvidia/nemotron-3-ultra-550b-a55b` | 1M | $0.001/$0.003 | Security audits |
 | DeepSeek V4 Pro | `deepseek/deepseek-v4-pro` | 1M | $0.435/$0.87 | Complex reasoning |
 

@@ -11,7 +11,7 @@ export const AiderRequestSchema = z.object({
   /** Specific files to include in context (optional — Aider uses repo-map otherwise) */
   files: z.array(z.string()).optional(),
 
-  /** OpenRouter model ID override (defaults to qwen3-coder:free) */
+  /** OpenRouter model ID override (defaults to openrouter/free — free routing) */
   model: z.string().optional(),
 
   /** Session ID for decision tracking in Qdrant */

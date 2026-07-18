@@ -1,6 +1,6 @@
 ---
 name: ops
-model: ollama/qwen2.5-coder:1.5b
+model: ollama/qwen2.5-coder:7b
 description: |
   DevOps/Infra specialist: CI/CD, infrastructure, monitoring, deployment.
 tools:

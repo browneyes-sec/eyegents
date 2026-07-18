@@ -1,16 +1,17 @@
 import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { z } from "zod";
-import { FREE_MODEL } from "@eyegents/shared-types";
 
 /**
  * MCP tools for executing Aider coding tasks.
  *
- * Architecture note: The MCP server runs inside a Docker container.
- * Aider (Python) must be available in the container or reachable.
- * For production, install Python + aider in the Docker image.
+ * Architecture: The MCP server can run on the HOST or inside Docker.
+ * - HOST: Aider is found via PATH or the project .venvs/aider venv.
+ * - Docker: The Docker image includes aider (Python venv at /opt/aider-venv)
+ *   and the host repo is mounted at /app (see docker-compose.yml).
  *
- * For host-side execution, use @eyegents/aider-adapter directly.
+ * Either way, local files in the repo are accessible.
+ * For standalone host-side execution without MCP, use @eyegents/aider-adapter.
  */
 
 const executeSchema = z.object({
@@ -28,8 +29,8 @@ export const aiderTools = [
     name: "aider_execute",
     description:
       "Execute an Aider coding task. Aider reads CONVENTIONS.md + CLAUDE.md for context, " +
-      "edits files, and returns a structured diff. Requires Python + aider in the MCP container. " +
-      "For host-side usage, import @eyegents/aider-adapter directly.",
+      "edits files, and returns a structured diff. Works on host (via PATH/venv) and in Docker " +
+      "(aider pre-installed, repo mounted at /app).",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -44,7 +45,7 @@ export const aiderTools = [
         },
         model: {
           type: "string",
-          description:             `OpenRouter model override (default: ${FREE_MODEL}, no rate limit)`,
+          description:             "OpenRouter model override (default: openrouter/openrouter/free — free routing)",
         },
         sessionId: {
           type: "string",
@@ -121,7 +122,7 @@ export const aiderTools = [
   },
   {
     name: "aider_check",
-    description: "Check if Aider is available in the MCP container environment",
+    description: "Check if Aider is available in the current environment (host or Docker)",
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -188,9 +189,9 @@ function buildAiderCommand(params: z.infer<typeof executeSchema>): string {
   const parts: string[] = [
     "aider",
     "--model",
-    params.model || `openrouter/${FREE_MODEL}`,
+    params.model || "openrouter/openrouter/free",
     "--weak-model",
-    `openrouter/${FREE_MODEL}`,
+    "openrouter/openrouter/free",
     "--read",
     "CONVENTIONS.md",
     "--read",

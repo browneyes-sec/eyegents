@@ -1,11 +1,12 @@
 # eyegents/.aider.conf.yml
 # Aider configuration for eyegents monorepo
-# Primary model: DeepSeek V4 Flash (paid, credits available) via OpenRouter
-# Weak model: DeepSeek V4 Flash — same model for consistency
+# Primary model: openrouter/openrouter/free — OpenRouter free routing endpoint
+#   Routes to cheapest available free model (may vary per request)
+# Weak model: same — consistency across edit decisions
 # Economy model: Qwen3 Coder (free, may rate-limit upstream)
 
-model: openrouter/deepseek/deepseek-v4-flash
-weak-model: openrouter/deepseek/deepseek-v4-flash
+model: openrouter/openrouter/free
+weak-model: openrouter/openrouter/free
 
 # Credential resolution (reads OPENROUTER_API_KEY from .env)
 env-file: .env

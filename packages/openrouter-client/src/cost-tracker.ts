@@ -30,6 +30,18 @@ const PRICING: Record<string, ModelPricing> = {
 		inputPerMillion: 0,
 		outputPerMillion: 0,
 	},
+	"qwen/qwen3-coder:free": {
+		inputPerMillion: 0,
+		outputPerMillion: 0,
+	},
+	"deepseek/deepseek-v4-flash:free": {
+		inputPerMillion: 0,
+		outputPerMillion: 0,
+	},
+	"openrouter/free": {
+		inputPerMillion: 0,
+		outputPerMillion: 0,
+	},
 	"gpt-4o-mini": { inputPerMillion: 0.15, outputPerMillion: 0.6 },
 	"claude-3-5-haiku-20241022": { inputPerMillion: 0.8, outputPerMillion: 4.0 },
 };

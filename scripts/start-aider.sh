@@ -54,4 +54,4 @@ fi
 export OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"
 
 # Start Aider
-"$VENV_PATH/bin/aider" --model "openrouter/nvidia/nemotron-3-super-120b-a12b:free" "$@"
+"$VENV_PATH/bin/aider" --model "openrouter/openrouter/free" "$@"

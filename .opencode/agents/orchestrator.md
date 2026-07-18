@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-model: ollama/qwen2.5-coder:1.5b
+model: opencode/deepseek-v4-flash-free
 description: |
   Task decomposition, agent routing, context aggregation.
   Breaks complex requests into subtasks, assigns to specialists,

@@ -37,6 +37,17 @@
       HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
       X-Title: "eyegents"
 
+- name: openrouter/openrouter/free
+  edit_format: whole
+  use_repo_map: true
+  weak_model_name: openrouter/openrouter/free
+  extra_params:
+    max_tokens: 4096
+    temperature: 0.1
+    extra_headers:
+      HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
+      X-Title: "eyegents"
+
 - name: openrouter/free
   edit_format: whole
   use_repo_map: false

@@ -1,6 +1,6 @@
 ---
 name: certifier
-model: ollama/qwen2.5-coder:1.5b
+model: opencode/deepseek-v4-flash-free
 description: |
   Security & compliance reviewer. Validates code against policies,
   checks for vulnerabilities, secrets, license compliance.

@@ -1,6 +1,6 @@
 ---
 name: backend
-model: ollama/qwen2.5-coder:1.5b
+model: opencode/deepseek-v4-flash-free
 description: |
   Backend specialist: APIs, databases, auth, messaging, performance.
 tools:

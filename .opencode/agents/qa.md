@@ -1,6 +1,6 @@
 ---
 name: qa
-model: ollama/qwen2.5-coder:1.5b
+model: opencode/deepseek-v4-flash-free
 description: |
   QA/Test specialist: Unit, integration, e2e testing, coverage, benchmarks.
 tools:

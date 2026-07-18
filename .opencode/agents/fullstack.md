@@ -1,6 +1,6 @@
 ---
 name: fullstack
-model: ollama/qwen2.5-coder:1.5b
+model: opencode/deepseek-v4-flash-free
 description: |
   Full-stack generalist: End-to-end features, integration, cross-cutting concerns.
 tools:
