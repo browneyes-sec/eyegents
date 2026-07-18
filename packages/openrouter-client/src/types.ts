@@ -8,6 +8,7 @@ export const OpenRouterModelSchema = z.object({
 	costPerMillionOutput: z.number(),
 	strengths: z.array(z.string()),
 	tier: z.enum(["free", "paid"]),
+	noLimit: z.boolean().optional().default(false),
 });
 export type OpenRouterModel = z.infer<typeof OpenRouterModelSchema>;
 
@@ -22,6 +23,7 @@ export const AgentRoutingConfigSchema = z.object({
 	fallback: AgentRouteSchema.optional(),
 	simple: AgentRouteSchema.optional(),
 	complex: AgentRouteSchema.optional(),
+	free: AgentRouteSchema.optional(),
 	complexityThreshold: z.number().optional(),
 	complexKeywords: z.array(z.string()).optional(),
 });

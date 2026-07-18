@@ -163,6 +163,15 @@ export const GitCommitSchema = z.object({
 });
 export type GitCommit = z.infer<typeof GitCommitSchema>;
 
+export const FreeModelConfigSchema = z.object({
+  name: z.string(),
+  provider: z.string(),
+  model: z.string(),
+  noLimit: z.boolean().default(true),
+  tier: z.literal("free"),
+});
+export type FreeModelConfig = z.infer<typeof FreeModelConfigSchema>;
+
 export const ModelConfigSchema = z.object({
   name: z.string(),
   provider: z.string(),

@@ -12,6 +12,15 @@
       "strengths": ["coding", "code generation", "refactoring", "agent orchestration"],
       "tier": "free"
     },
+    "qwen-coder-free": {
+      "openrouterId": "qwen/qwen3-coder:free",
+      "contextWindow": 1048576,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0,
+      "costPerMillionOutput": 0,
+      "strengths": ["coding", "code generation", "refactoring", "agent orchestration", "no rate limit"],
+      "tier": "free"
+    },
     "deepseek-flash": {
       "openrouterId": "deepseek/deepseek-v4-flash",
       "contextWindow": 1048576,
@@ -91,12 +100,12 @@
     },
     "aider": {
       "primary": {
-        "model": "deepseek-flash",
-        "description": "DeepSeek V4 Flash (paid, credits available) — reliable primary coding model"
+        "model": "qwen-coder",
+        "description": "Qwen3 Coder (free) — no rate limit, primary coding model"
       },
       "economy": {
         "model": "qwen-coder",
-        "description": "Qwen3 Coder (free) — cost-saving fallback, may rate-limit upstream"
+        "description": "Qwen3 Coder (free) — cost-saving fallback, no rate limit"
       },
       "fallback": {
         "model": "openrouter-free",

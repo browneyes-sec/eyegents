@@ -151,6 +151,9 @@ export class OpenRouterClient {
   }
 
   async complete(request: CompletionRequest): Promise<CompletionResponse> {
+    // If no API key is configured, force use of a free model
+    const useFreeModel = !this.apiKey || request.model?.includes("free");
+
     for (const provider of FALLBACK_CHAIN) {
       let modelToUse: string;
       if (provider === "openrouter") {
@@ -159,7 +162,12 @@ export class OpenRouterClient {
           request.taskComplexity,
           request.messages.map((m) => m.content).join(" "),
         );
-        modelToUse = resolution.openrouterId || request.model;
+        // Override with free model if needed
+        if (useFreeModel) {
+          modelToUse = "qwen/qwen3-coder:free";
+        } else {
+          modelToUse = resolution.openrouterId || request.model;
+        }
       } else {
         modelToUse = this.mapModel(provider, request.model);
       }
