@@ -65,6 +65,33 @@
       "costPerMillionOutput": 0.87,
       "strengths": ["complex reasoning", "architecture", "deep analysis"],
       "tier": "paid"
+    },
+    "kimi-k2.7-code": {
+      "openrouterId": "moonshotai/kimi-k2.7-code",
+      "contextWindow": 262144,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0.95,
+      "costPerMillionOutput": 4.00,
+      "strengths": ["coding specialist", "agentic coding", "reasoning", "deep thinking"],
+      "tier": "paid"
+    },
+    "kimi-k2.6": {
+      "openrouterId": "moonshotai/kimi-k2.6",
+      "contextWindow": 262144,
+      "maxOutput": 16384,
+      "costPerMillionInput": 0.95,
+      "costPerMillionOutput": 3.00,
+      "strengths": ["general purpose", "reasoning", "vision", "agent tasks"],
+      "tier": "paid"
+    },
+    "kimi-k3": {
+      "openrouterId": "moonshotai/kimi-k3",
+      "contextWindow": 1048576,
+      "maxOutput": 16384,
+      "costPerMillionInput": 3.00,
+      "costPerMillionOutput": 15.00,
+      "strengths": ["flagship", "complex reasoning", "long context", "deep analysis"],
+      "tier": "paid"
     }
   },
   "agentRoutes": {

@@ -104,6 +104,9 @@ export LD_LIBRARY_PATH="${HOME}/.local/lib/playwright-deps:${LD_LIBRARY_PATH:-}"
 | OpenRouter free | `openrouter/free` | varies | $0 | **Aider primary** — routes to cheapest free model |
 | Nemotron 3 Ultra | `nvidia/nemotron-3-ultra-550b-a55b` | 1M | $0.001/$0.003 | Security audits |
 | DeepSeek V4 Pro | `deepseek/deepseek-v4-pro` | 1M | $0.435/$0.87 | Complex reasoning |
+| Kimi K2.7-Code | `moonshotai/kimi-k2.7-code` | 262K | $0.95/$4.00 | Coding specialist, agentic coding |
+| Kimi K2.6 | `moonshotai/kimi-k2.6` | 262K | $0.95/$3.00 | General purpose, vision, reasoning |
+| Kimi K3 | `moonshotai/kimi-k3` | 1M | $3.00/$15.00 | Flagship, complex reasoning |
 
 ## External Fallback Strategy
 | Scenario | Fallback |

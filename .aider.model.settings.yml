@@ -79,3 +79,29 @@
     extra_headers:
       HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
       X-Title: "eyegents"
+
+# Kimi K2.7-Code — premium coding specialist via OpenRouter
+- name: openrouter/moonshotai/kimi-k2.7-code
+  edit_format: diff
+  weak_model_name: openrouter/qwen/qwen3-coder:free
+  use_repo_map: true
+  send_undo_reply: false
+  examples_as_sys_msg: true
+  extra_params:
+    max_tokens: 8192
+    temperature: 0.2
+    extra_headers:
+      HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
+      X-Title: "eyegents"
+
+# Kimi K2.6 — general-purpose reasoning model via OpenRouter
+- name: openrouter/moonshotai/kimi-k2.6
+  edit_format: diff
+  weak_model_name: openrouter/qwen/qwen3-coder:free
+  use_repo_map: true
+  extra_params:
+    max_tokens: 8192
+    temperature: 0.2
+    extra_headers:
+      HTTP-Referer: "https://github.com/browneyes-sec/eyegents"
+      X-Title: "eyegents"

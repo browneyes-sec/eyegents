@@ -33,6 +33,9 @@ function list_models() {
   echo "  • openrouter/nvidia/nemotron-3-ultra-550b-a55b       # Ultra paid model"
   echo "  • deepseek/deepseek-v4-flash                        # Fast coding"
   echo "  • deepseek/deepseek-v4-pro                          # Complex reasoning"
+  echo "  • moonshotai/kimi-k2.7-code                         # Kimi coding specialist (paid)"
+  echo "  • moonshotai/kimi-k2.6                              # Kimi general-purpose (paid)"
+  echo "  • moonshotai/kimi-k3                                # Kimi flagship 1M ctx (paid)"
 }
 
 function test_connectivity() {
